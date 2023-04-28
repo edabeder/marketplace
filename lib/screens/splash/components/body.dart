@@ -67,10 +67,13 @@ class _BodyState extends State<Body> {
                       ),
                     ),
                     Spacer(flex: 3),
-                    DefaultButton(
-                      text: "Continue",
-                      press: () {
-                        Navigator.pushNamed(context, SignInScreen.routeName);
+                    ElevatedButton(
+                      child: const Text('Open route'),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => SignInScreen()),
+                        );
                       },
                     ),
                     Spacer(),

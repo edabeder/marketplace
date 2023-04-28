@@ -24,11 +24,16 @@ class ProductCard extends StatelessWidget {
       child: SizedBox(
         width: getProportionateScreenWidth(width),
         child: GestureDetector(
-          onTap: () => Navigator.pushNamed(
-            context,
-            DetailsScreen.routeName,
-            arguments: ProductDetailsArguments(product: product),
-          ),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailsScreen(
+                  product: product,
+                ),
+              ),
+            );
+          },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

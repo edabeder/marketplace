@@ -15,13 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class SignForm extends StatefulWidget {
-  String? _message;
-
-  // This function will send the message to our backend.
-  void sendMessage(msg) {
-    // Print the message in the terminal temporarily
-    print(msg);
-  }
   @override
   _SignFormState createState() => _SignFormState();
 }
@@ -82,14 +75,19 @@ class _SignFormState extends State<SignForm> {
           ),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(20)),
-          DefaultButton(
-            text: "Continue",
-            press: () {
+          ElevatedButton(
+            child: const Text("Continue"),
+            onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
                 // if all are valid then go to success screen
                 KeyboardUtil.hideKeyboard(context);
-                Navigator.pushNamed(context, LoginSuccessScreen.routeName);
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginSuccessScreen()),
+                  );
+                };
               }
             },
           ),
@@ -166,26 +164,3 @@ class _SignFormState extends State<SignForm> {
   }
 }
 
-signup(email, password) async{
-  final response = await http.post(
-    Uri.parse('https://jsonplaceholder.typicode.com/albums'),
-    headers: <String, String>{
-      'Content-Type': 'application/json; charset=UTF-8',
-    },
-    body: jsonEncode(<String, String>{
-      'email': email,
-      'password': password,
-    }),
-  );
-
-  if (response.statusCode == 201) {
-    // If the server did return a 201 CREATED response,
-    // then parse the JSON.
-    //return Album.fromJson(jsonDecode(response.body));
-  } else {
-    // If the server did not return a 201 CREATED response,
-    // then throw an exception.
-    throw Exception('Failed to create album.');
-  }
-
-}
