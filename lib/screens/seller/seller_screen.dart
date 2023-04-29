@@ -1,7 +1,10 @@
 import 'dart:io';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../helper/keyboard.dart';
 
 class SellerScreen extends StatefulWidget {
   @override
@@ -11,14 +14,49 @@ class SellerScreen extends StatefulWidget {
 class _SellerScreenState extends State<SellerScreen> {
   final List<Map<String, dynamic>> _products = [];
 
-  final TextEditingController _brandController = TextEditingController();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _priceController = TextEditingController();
-  final TextEditingController _categoryController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _brandController = TextEditingController();
+  final _sellerIDController = TextEditingController();
+  final _nameController = TextEditingController();
+  final _priceController = TextEditingController();
+  final _pictureController = TextEditingController();
+  final _categoryController = TextEditingController();
 
   File? _imageFile;
+  String? brand;
+  String? name;
+  int? sellerId;
+  int? price;
+  String? picture;
+  String? category;
 
   bool _isLoading = false;
+
+  void addProduct(String brand, String name, int sellerId, int price,
+      String picture, String category) async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:3000/api/products'),
+        body: {
+          'brand': brand,
+          'pName': name,
+          'sellerId': sellerId,
+          'price': price,
+          'pPicture': picture,
+          'category': category,
+        },
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        print('New product added: $responseData');
+      } else {
+        print('Error adding product: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error adding product: $e');
+    }
+  }
 
   Future<void> _pickImage(ImageSource source) async {
     try {
@@ -29,7 +67,6 @@ class _SellerScreenState extends State<SellerScreen> {
           _imageFile = File(pickedFile.path);
         });
       }
-
     } catch (e) {
       print(e);
     }
@@ -125,6 +162,15 @@ class _SellerScreenState extends State<SellerScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextField(
+                controller: _sellerIDController,
+                decoration: InputDecoration(
+                  hintText: 'Seller ID',
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
                 controller: _priceController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
@@ -142,11 +188,17 @@ class _SellerScreenState extends State<SellerScreen> {
               ),
             ),
             ElevatedButton(
-              onPressed: _isLoading ? null : _addProduct,
-              child: _isLoading
-                  ? CircularProgressIndicator()
-                  : Text('Add Product'),
-            ),
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text('Add Product'),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    addProduct(
+                        brand!, name!, sellerId!, price!, picture!, category!);
+                    KeyboardUtil.hideKeyboard(context);
+                  }
+                }),
             Expanded(
               child: ListView.builder(
                 itemCount: _products.length,

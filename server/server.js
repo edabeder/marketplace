@@ -151,12 +151,12 @@ app.post('/api/products', async (req, res) => {
        RETURNING *`,
       [brand, pName, sellerId, price, pPicture, category]
     );
-
-    res.json(newProduct.rows[0]);
+    res.status(201).json(newProduct.rows[0]);
   } catch (err) {
     console.error(err.message);
     res.status(500).send({ message: "Server error" });
   }
+  
 });
 
 app.delete('/api/products/:id', async (req, res) => {
