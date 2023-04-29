@@ -37,7 +37,6 @@ class AddUserScreen extends StatefulWidget {
 }
 
 class _AddUserScreenState extends State<AddUserScreen> {
-
   String dropdownValue = 'Buyer'; // initial dropdown value
   bool isRegistered = false;
   final _formKey = GlobalKey<FormState>();
@@ -84,7 +83,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final url = 'http://10.0.2.2:3000/api/users';
+      print("anaaann");
+      final url = 'http://10.0.2.2:3000/api/register';
       final response = await Dio().post(url, data: {
         'fName': _fnameController.text,
         'lname': _lnameController.text,
@@ -96,7 +96,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
       });
 
       print("normal deneme");
-      if ( await response.statusCode == 201) {
+      if (await response.statusCode == 201) {
         print("is denemesi");
         // Kullanıcı başarıyla eklendi
         ScaffoldMessenger.of(context).showSnackBar(
@@ -107,9 +107,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
         print("if denemesi 2");
 
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => HomeScreen()),
+        );
+
         // return true if registration was successful
       }
-    }// return false if form validation failed
+    } // return false if form validation failed
   }
 
   @override
@@ -189,20 +194,16 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 SizedBox(
                   height: 16.0,
                 ),
-
-
                 ElevatedButton(
-                  onPressed: ()  {
+                  onPressed: () {
                     print("hello");
                     print(isRegistered);
                     _submitForm();
 
                     print(isRegistered);
-
                   },
                   child: Text('Add User Deneme'),
                 ),
-
                 SizedBox(height: 20),
                 ElevatedButton(
                   child: Text('Home screen'),
@@ -211,7 +212,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
                     MaterialPageRoute(builder: (context) => HomeScreen()),
                   ),
                 ),
-
                 ElevatedButton(
                   child: Text('Seller Screen'),
                   onPressed: () => Navigator.push(
@@ -219,8 +219,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
                     MaterialPageRoute(builder: (context) => SellerScreen()),
                   ),
                 ),
-
-
               ],
             ),
           ),
