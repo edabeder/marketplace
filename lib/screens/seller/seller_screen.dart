@@ -39,12 +39,15 @@ class _SellerScreenState extends State<SellerScreen> {
 
       // bytes DB'ye çekilecek
 
+      //final result = await postgres.query(''); Bytea Querysi  buraya yazılacak
+      //final byteaValue = result.first[0] as List<int>;  
+      //final imageData = Uint8List.fromList(byteaValue); Tekrar resim formatına çevirecek
+
       if (pickedFile != null) {
         final imageFile = File(pickedFile.path);
         final bytes = await imageFile.readAsBytes();
         print(bytes);
         print("hi");
-
       }
 
     } catch (e) {
