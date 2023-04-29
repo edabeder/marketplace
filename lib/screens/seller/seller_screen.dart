@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,13 +28,13 @@ class _SellerScreenState extends State<SellerScreen> {
   String? name;
   int? sellerId;
   int? price;
-  String? picture;
+  ByteData? picture;
   String? category;
 
   bool _isLoading = false;
 
   void addProduct(String brand, String name, int sellerId, int price,
-      String picture, String category) async {
+      ByteData picture, String category) async {
     try {
       final response = await http.post(
         Uri.parse('http://10.0.2.2:3000/api/products'),
@@ -58,21 +59,37 @@ class _SellerScreenState extends State<SellerScreen> {
     }
   }
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<ByteData?> _pickImage(ImageSource source) async {
+    var bytes = null;
+
     try {
       final pickedFile = await ImagePicker().getImage(source: source);
+
+      print(pickedFile?.readAsBytes());
+      print("Hello");
 
       if (pickedFile != null) {
         setState(() {
           _imageFile = File(pickedFile.path);
         });
       }
+
+      // bytes DB'ye çekilecek
+
+      if (pickedFile != null) {
+        final imageFile = File(pickedFile.path);
+        bytes = await imageFile.readAsBytes();
+        print(bytes);
+        print("hi");
+      }
     } catch (e) {
       print(e);
     }
+    print(bytes);
+    return bytes;
   }
 
-  void _addProduct() {
+  /* void _addProduct() {
     String brand = _brandController.text.trim();
     String name = _nameController.text.trim();
     String price = _priceController.text.trim();
@@ -98,7 +115,7 @@ class _SellerScreenState extends State<SellerScreen> {
       _imageFile?.delete(); // delete the file if it exists
       _imageFile = null;
     });
-  }
+  }*/
 
   void _deleteProduct(int index) {
     setState(() {
@@ -195,7 +212,12 @@ class _SellerScreenState extends State<SellerScreen> {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
                     addProduct(
-                        brand!, name!, sellerId!, price!, picture!, category!);
+                        brand!,
+                        name!,
+                        sellerId!,
+                        price!,
+                        _pickImage(picture as ImageSource) as ByteData,
+                        category!);
                     KeyboardUtil.hideKeyboard(context);
                   }
                 }),
