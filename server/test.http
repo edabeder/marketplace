@@ -1,11 +1,12 @@
-POST http://localhost:3000/api/users HTTP/1.1
+
+POST http://localhost:3000/api/register HTTP/1.1
 Content-Type: application/json
 
 {
-    "fName" : "asgd",
+    "fName" : "abbab",
     "lname" : "beadad",
 
-    "email": "anf@gmail.com",
+    "email": "ababbbb@gmail.com",
     "password": "123456789",
     "password2": "123456789",
     "phone" : 53232,
