@@ -1,15 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:untitled1/Metamask/metamask_screen.dart';
+import 'package:untitled1/module/auth/interfaces/screens/authentication_screen.dart';
+import 'package:walletconnect_dart/walletconnect_dart.dart';
+import 'package:web3dart/web3dart.dart';
+import '../../../configs/web3_config.dart';
 import '/screens/cart/cart_screen.dart';
 
 import '../../../size_config.dart';
 import 'search_field.dart';
 
 class HomeHeader extends StatelessWidget {
-  const HomeHeader({
+
+  HomeHeader({
     Key? key,
   }) : super(key: key);
 
-  @override
+
+
+
   Widget build(BuildContext context) {
     return Padding(
       padding:
@@ -25,36 +33,19 @@ class HomeHeader extends StatelessWidget {
             ),
             icon: Icon(Icons.shopping_cart),
           ),
-          Stack(
-            children: [
-              IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back_rounded ),
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => AuthenticationScreen(),
               ),
-              // Positioned(
-              //   top: 0,
-              //   right: 0,
-              //   child: Container(
-              //     padding: EdgeInsets.all(1),
-              //     decoration: BoxDecoration(
-              //       color: Colors.red,
-              //       borderRadius: BorderRadius.circular(6),
-              //     ),
-              //     constraints: BoxConstraints(
-              //       minWidth: 12,
-              //       minHeight: 12,
-              //     ),
-              //     child: Text(
-              //       '3',
-              //       style: TextStyle(
-              //         color: Colors.white,
-              //         fontSize: 8,
-              //       ),
-              //       textAlign: TextAlign.center,
-              //     ),
-              //   ),
-              // ),
-            ],
+            ),
+            icon: Icon(Icons.home),
+          ),
+
+          IconButton(
+            onPressed: () => Navigator.pop(context),
+            icon: Icon(Icons.arrow_back_rounded ),
           ),
         ],
       ),
