@@ -20,14 +20,31 @@ class _SellerScreenState extends State<SellerScreen> {
 
   bool _isLoading = false;
 
+
+
   Future<void> _pickImage(ImageSource source) async {
+
     try {
       final pickedFile = await ImagePicker().getImage(source: source);
+
+
+      print(pickedFile?.readAsBytes());
+      print("Hello");
 
       if (pickedFile != null) {
         setState(() {
           _imageFile = File(pickedFile.path);
         });
+      }
+
+      // bytes DB'ye çekilecek
+
+      if (pickedFile != null) {
+        final imageFile = File(pickedFile.path);
+        final bytes = await imageFile.readAsBytes();
+        print(bytes);
+        print("hi");
+
       }
 
     } catch (e) {
