@@ -28,32 +28,32 @@ class HomeHeader extends StatelessWidget {
           Stack(
             children: [
               IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.notifications),
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back_rounded ),
               ),
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.all(1),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  constraints: BoxConstraints(
-                    minWidth: 12,
-                    minHeight: 12,
-                  ),
-                  child: Text(
-                    '3',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 8,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
+              // Positioned(
+              //   top: 0,
+              //   right: 0,
+              //   child: Container(
+              //     padding: EdgeInsets.all(1),
+              //     decoration: BoxDecoration(
+              //       color: Colors.red,
+              //       borderRadius: BorderRadius.circular(6),
+              //     ),
+              //     constraints: BoxConstraints(
+              //       minWidth: 12,
+              //       minHeight: 12,
+              //     ),
+              //     child: Text(
+              //       '3',
+              //       style: TextStyle(
+              //         color: Colors.white,
+              //         fontSize: 8,
+              //       ),
+              //       textAlign: TextAlign.center,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ],

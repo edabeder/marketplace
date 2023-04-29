@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:untitled1/screens/home/home_screen.dart';
 import '../../../components/default_button.dart';
 import 'package:flutter/material.dart';
+import '../seller/seller_screen.dart';
 import '../splash/splash_screen.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/form_error.dart';
@@ -204,10 +205,18 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
                 SizedBox(height: 20),
                 ElevatedButton(
-                  child: Text('Register'),
+                  child: Text('Home screen'),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => HomeScreen()),
+                  ),
+                ),
+
+                ElevatedButton(
+                  child: Text('Seller Screen'),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SellerScreen()),
                   ),
                 ),
 
