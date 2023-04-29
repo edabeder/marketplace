@@ -58,12 +58,13 @@ app.post('/api/login', async (req, res) => {
     // Kullanıcının kimlik doğrulaması başarılı oldu, bir oturum oluşturabiliriz
     req.session.user = user.rows[0].id;
 
-    res.send({ message: "Login successful" });
+    res.status(200).send({ message: "Login successful" });
   } catch (err) {
     console.error(err.message);
     res.status(500).send({ message: "Server error" });
   }
 });
+
 
 app.post('/api/logout', (req, res) => {
   // Kullanıcının oturumunu sonlandırın

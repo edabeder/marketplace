@@ -83,7 +83,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      print("anaaann");
       final url = 'http://10.0.2.2:3000/api/register';
       final response = await Dio().post(url, data: {
         'fName': _fnameController.text,

@@ -1,4 +1,6 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '/components/custom_surfix_icon.dart';
 import '/components/form_error.dart';
 import '/helper/keyboard.dart';
@@ -8,11 +10,6 @@ import '/screens/login_success/login_success_screen.dart';
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
-import 'dart:async';
-import 'dart:convert';
-
-import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 class SignForm extends StatefulWidget {
   @override
@@ -21,10 +18,19 @@ class SignForm extends StatefulWidget {
 
 class _SignFormState extends State<SignForm> {
   final _formKey = GlobalKey<FormState>();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
   String? email;
   String? password;
   bool? remember = false;
   final List<String?> errors = [];
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void addError({String? error}) {
     if (!errors.contains(error))
@@ -38,6 +44,24 @@ class _SignFormState extends State<SignForm> {
       setState(() {
         errors.remove(error);
       });
+  }
+
+  Future<void> loginUser(String email, String password) async {
+    if (_formKey.currentState!.validate()) {
+      final url = 'http://10.0.2.2:3000/api/login';
+      final response = await Dio().post(url, data: {
+        'email': email,
+        'password': password,
+      });
+      if (response.statusCode == 200) {
+        // Kullanıcı başarıyla eklendi
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login succesful'),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -80,14 +104,14 @@ class _SignFormState extends State<SignForm> {
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                // if all are valid then go to success screen
+                loginUser(email!, password!);
                 KeyboardUtil.hideKeyboard(context);
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginSuccessScreen()),
-                  );
-                };
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginSuccessScreen(),
+                  ),
+                );
               }
             },
           ),
@@ -99,20 +123,21 @@ class _SignFormState extends State<SignForm> {
   TextFormField buildPasswordFormField() {
     return TextFormField(
       obscureText: true,
-      onSaved: (newValue) => password = newValue,
+      controller: _passwordController,
+      onSaved: (newValue) => password = newValue!,
       onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);
-        } else if (value.length >= 8) {
+        } else if (value.length >= 6) {
           removeError(error: kShortPassError);
         }
-        return null;
+        password = value;
       },
       validator: (value) {
         if (value!.isEmpty) {
           addError(error: kPassNullError);
           return "";
-        } else if (value.length < 8) {
+        } else if (value.length < 6) {
           addError(error: kShortPassError);
           return "";
         }
@@ -121,8 +146,6 @@ class _SignFormState extends State<SignForm> {
       decoration: InputDecoration(
         labelText: "Password",
         hintText: "Enter your password",
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
         suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
       ),
@@ -132,7 +155,7 @@ class _SignFormState extends State<SignForm> {
   TextFormField buildEmailFormField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      onSaved: (newValue) => email = newValue,
+      onSaved: (newValue) => email = newValue!,
       /*onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kEmailNullError);
@@ -163,4 +186,3 @@ class _SignFormState extends State<SignForm> {
     );
   }
 }
-
