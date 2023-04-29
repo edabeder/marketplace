@@ -1,9 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'package:untitled1/screens/home/home_screen.dart';
-import 'package:untitled1/screens/seller/seller_screen.dart';
 import '../../../components/default_button.dart';
 import 'package:flutter/material.dart';
 import '../splash/splash_screen.dart';
@@ -17,7 +15,7 @@ import '../../../constants.dart';
 import '../../../size_config.dart';
 import 'dart:async';
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -69,17 +67,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
     return null;
   }
 
-  autoLogin() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool? loggedIn = prefs.getBool('loggedin');
-
-    if (loggedIn == true) {
-      return SellerScreen();
-    } else {
-      return HomeScreen();
-    }
-  }
-
   void _navigateToHome() {
     if (dropdownValue == 'Buyer') {
       Navigator.pushReplacement(
@@ -94,56 +81,35 @@ class _AddUserScreenState extends State<AddUserScreen> {
     }
   }
 
-  Future<bool> _navigation() async {
-    final url = 'http://10.0.2.2:3000/api/users';
-
-    final response = await http.post(Uri.parse(url), body: {
-      'fName': _fnameController.text,
-      'lname': _lnameController.text,
-      'email': _emailController.text,
-      'password': _passwordController.text,
-      'password2': _passwordController2.text,
-      'phone': _phoneController.text,
-      'birthday': _birthdayController.text,
-    });
-    debugPrint("deneme3");
-    if (response.statusCode == 201) {
-      return true;
-    }
-    return false;
-  }
-
-  Future<bool> _submitForm() async {
-    debugPrint("deneme1");
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      debugPrint("deneme2");
-      await _navigation();
+      final url = 'http://10.0.2.2:3000/api/users';
+      final response = await Dio().post(url, data: {
+        'fName': _fnameController.text,
+        'lname': _lnameController.text,
+        'email': _emailController.text,
+        'password': _passwordController.text,
+        'password2': _passwordController2.text,
+        'phone': _phoneController.text,
+        'birthday': _birthdayController.text,
+      });
 
+      print("normal deneme");
+      if ( await response.statusCode == 201) {
+        print("is denemesi");
+        // Kullanıcı başarıyla eklendi
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('User added to database'),
+          ),
+        );
 
+        print("if denemesi 2");
 
-    }
-    return false; // return false if form validation failed
+        // return true if registration was successful
+      }
+    }// return false if form validation failed
   }
-
-
-
-
-  void submitRegistrationForm() async {
-
-    final registrationSuccessful = await _submitForm();
-    if (registrationSuccessful) {
-    // Navigate to next screen
-    Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => HomeScreen()),
-    );
-    } else {
-    // Display error message to user
-    }
-  }
-
-  
-
 
   @override
   Widget build(BuildContext context) {
@@ -227,7 +193,11 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 ElevatedButton(
                   onPressed: ()  {
                     print("hello");
-                    submitRegistrationForm();
+                    print(isRegistered);
+                    _submitForm();
+
+                    print(isRegistered);
+
                   },
                   child: Text('Add User Deneme'),
                 ),
@@ -250,4 +220,3 @@ class _AddUserScreenState extends State<AddUserScreen> {
     );
   }
 }
-
