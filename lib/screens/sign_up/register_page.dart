@@ -5,7 +5,9 @@ import 'package:untitled1/screens/home/home_screen.dart';
 import '../../../components/default_button.dart';
 import 'package:flutter/material.dart';
 import '../seller/seller_screen.dart';
+import '../sign_in/sign_in_screen.dart';
 import '../splash/splash_screen.dart';
+import '../sign_in/components/sign_form.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/form_error.dart';
 import '/helper/keyboard.dart';
@@ -108,7 +110,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
+          MaterialPageRoute(builder: (context) => SignInScreen()),
         );
 
         // return true if registration was successful

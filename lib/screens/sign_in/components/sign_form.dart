@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import '../../home/home_screen.dart';
 import '/components/custom_surfix_icon.dart';
 import '/components/form_error.dart';
 import '/helper/keyboard.dart';
@@ -60,6 +61,12 @@ class _SignFormState extends State<SignForm> {
             content: Text('Login succesful'),
           ),
         );
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomeScreen(),
+          ),
+        );
       }
     }
   }
@@ -106,12 +113,6 @@ class _SignFormState extends State<SignForm> {
                 _formKey.currentState!.save();
                 loginUser(email!, password!);
                 KeyboardUtil.hideKeyboard(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => LoginSuccessScreen(),
-                  ),
-                );
               }
             },
           ),
