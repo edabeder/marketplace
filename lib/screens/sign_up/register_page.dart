@@ -197,11 +197,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    print("hello");
-                    print(isRegistered);
                     _submitForm();
-
-                    print(isRegistered);
                   },
                   child: Text('Add User Deneme'),
                 ),

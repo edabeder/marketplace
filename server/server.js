@@ -142,20 +142,23 @@ app.post('/api/register', async (req, res) => {
 
 
 app.post('/api/products', async (req, res) => {
-  const { brand, pName, sellerId, price, pPicture, category } = req.body;
+  const { brand, pName, sellerID, price, pPicture, category } = req.body;
 
-  try {
-    const newProduct = await pool.query(
-      `INSERT INTO product (brand, "pName", "sellerID", price, "pPicture", category)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
-      [brand, pName, sellerId, price, pPicture, category]
-    );
-    res.status(201).json(newProduct.rows[0]);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send({ message: "Server error" });
-  }
+const base64EncodedImage = Buffer.from(pPicture, "base64"); // base64 decode işlemi ve bytea türüne dönüştürme
+
+try {
+  const newProduct = await pool.query(
+    `INSERT INTO product (brand, "pName", "sellerID", price, "pPicture", category)
+     VALUES ($1, $2, $3, $4, $5, $6)
+     RETURNING *`,
+    [brand, pName, sellerID, price, base64EncodedImage, category]
+  );
+  res.status(201).json(newProduct.rows[0]);
+} catch (err) {
+  console.error(err.message);
+  res.status(500).send({ message: "Server error" });
+}
+
   
 });
 
@@ -183,7 +186,7 @@ app.delete('/api/products/:id', async (req, res) => {
 
 app.put('/api/products/:id', async (req, res) => {
   const { id } = req.params;
-  const { brand, pName, sellerId, price, pPicture, category } = req.body;
+  const { brand, pName, sellerID, price, pPicture, category } = req.body;
 
   try {
     const updatedProduct = await pool.query(
@@ -191,7 +194,7 @@ app.put('/api/products/:id', async (req, res) => {
        SET brand = $1, "pName" = $2, "sellerID" = $3, price = $4, "pPicture" = $5, category = $6
        WHERE id = $7
        RETURNING *`,
-      [brand, pName, sellerId, price, pPicture, category, id]
+      [brand, pName, sellerID, price, pPicture, category, id]
     );
 
     if (updatedProduct.rows.length === 0) {

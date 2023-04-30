@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
@@ -26,14 +27,22 @@ class _SellerScreenState extends State<SellerScreen> {
   File? _imageFile;
   String? brand;
   String? name;
-  int? sellerId;
+  int? sellerID;
   int? price;
   ByteData? picture;
   String? category;
+  var pickedImage;
 
   bool _isLoading = false;
 
-  void addProduct(String brand, String name, int sellerId, int price,
+  String? _validateFormField(String? value, String fieldName) {
+    if (value?.isEmpty ?? true) {
+      return '$fieldName is required';
+    }
+    return null;
+  }
+
+  /*void addProduct(String brand, String name, int sellerID, int price,
       ByteData picture, String category) async {
     try {
       final response = await http.post(
@@ -41,7 +50,7 @@ class _SellerScreenState extends State<SellerScreen> {
         body: {
           'brand': brand,
           'pName': name,
-          'sellerId': sellerId,
+          'sellerID': sellerID,
           'price': price,
           'pPicture': picture,
           'category': category,
@@ -57,10 +66,47 @@ class _SellerScreenState extends State<SellerScreen> {
     } catch (e) {
       print('Error adding product: $e');
     }
+  }*/
+
+  Future<void> addProduct() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Convert image to base64-encoded string
+      List<int> imageBytes = await _imageFile!.readAsBytes();
+      String base64Image = base64Encode(imageBytes);
+
+      final response = await http.post(
+        Uri.parse('http://10.0.2.2:3000/api/products'),
+        body: {
+          'brand': _brandController.text,
+          'pName': _nameController.text,
+          'sellerID': _sellerIDController.text,
+          'price': _priceController.text,
+          'pPicture': pickedImage.toString(),
+          'category': _categoryController.text,
+        },
+      );
+
+      if (response.statusCode == 201) {
+        final responseData = jsonDecode(response.body);
+        print('New product added: $responseData');
+      } else {
+        print('Error adding product: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Error adding product: $e');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
-  Future<ByteData?> _pickImage(ImageSource source) async {
-    var bytes = null;
+  /*Future<ByteData?> _pickImage(ImageSource source) async {
+    final completer = Completer<ByteData?>();
 
     try {
       final pickedFile = await ImagePicker().getImage(source: source);
@@ -74,52 +120,50 @@ class _SellerScreenState extends State<SellerScreen> {
         });
       }
 
+      if (pickedFile != null) {
+        final imageFile = File(pickedFile.path);
+        final bytes = await imageFile.readAsBytes();
+        print(bytes);
+        print("hi");
+        completer.complete(ByteData.view(bytes.buffer));
+      } else {
+        completer.complete(null);
+      }
+    } catch (e) {
+      print(e);
+      completer.completeError(e);
+    }
+
+    return completer.future;
+  }*/
+
+  Future<void> _pickImage(ImageSource source) async {
+    try {
+      final pickedFile = await ImagePicker().getImage(source: source);
+      print(await pickedFile?.readAsBytes()); // Değişiklik yapıldı
+      print("Hello");
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = File(pickedFile.path);
+        });
+      }
+
       // bytes DB'ye çekilecek
 
       //final result = await postgres.query(''); Bytea Querysi  buraya yazılacak
-      //final byteaValue = result.first[0] as List<int>;  
+      //final byteaValue = result.first[0] as List<int>;
       //final imageData = Uint8List.fromList(byteaValue); Tekrar resim formatına çevirecek
 
       if (pickedFile != null) {
         final imageFile = File(pickedFile.path);
-        bytes = await imageFile.readAsBytes();
+        final bytes = await imageFile.readAsBytes();
         print(bytes);
         print("hi");
       }
     } catch (e) {
       print(e);
     }
-    print(bytes);
-    return bytes;
   }
-
-  /* void _addProduct() {
-    String brand = _brandController.text.trim();
-    String name = _nameController.text.trim();
-    String price = _priceController.text.trim();
-    String category = _categoryController.text.trim();
-
-    Map<String, dynamic> newProduct = {
-      'brand': brand,
-      'name': name,
-      'price': price,
-      'category': category,
-      'image': _imageFile != null ? _imageFile?.path : null,
-    };
-
-    setState(() {
-      _products.add(newProduct);
-    });
-
-    _brandController.clear();
-    _nameController.clear();
-    _priceController.clear();
-    _categoryController.clear();
-    setState(() {
-      _imageFile?.delete(); // delete the file if it exists
-      _imageFile = null;
-    });
-  }*/
 
   void _deleteProduct(int index) {
     setState(() {
@@ -135,123 +179,126 @@ class _SellerScreenState extends State<SellerScreen> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(height: 20),
-            _imageFile != null
-                ? Image.file(
-                    _imageFile!,
-                    height: 100,
-                  )
-                : Container(
-                    height: 100,
-                    color: Colors.grey[300],
-                  ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                  child: Text('Gallery'),
-                ),
-                ElevatedButton(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  child: Text('Camera'),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _brandController,
-                decoration: InputDecoration(
-                  hintText: 'Product Brand',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _nameController,
-                decoration: InputDecoration(
-                  hintText: 'Product Name',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _sellerIDController,
-                decoration: InputDecoration(
-                  hintText: 'Seller ID',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _priceController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: 'Product Price',
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                controller: _categoryController,
-                decoration: InputDecoration(
-                  hintText: 'Product Category',
-                ),
-              ),
-            ),
-            ElevatedButton(
-                child: _isLoading
-                    ? CircularProgressIndicator()
-                    : Text('Add Product'),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    addProduct(
-                        brand!,
-                        name!,
-                        sellerId!,
-                        price!,
-                        _pickImage(picture as ImageSource) as ByteData,
-                        category!);
-                    KeyboardUtil.hideKeyboard(context);
-                  }
-                }),
-            Expanded(
-              child: ListView.builder(
-                itemCount: _products.length,
-                itemBuilder: (context, index) {
-                  final product = _products[index];
-                  return ListTile(
-                    leading: product['image'] != null
-                        ? Image.file(
-                            File(product['image']),
-                            height: 50,
-                          )
-                        : Container(
-                            height: 50,
-                            width: 50,
-                            color: Colors.grey[300],
-                          ),
-                    title: Text('${product['brand']} ${product['name']}'),
-                    subtitle: Text('\$${product['price']}'),
-                    trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => _deleteProduct(index),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              SizedBox(height: 20),
+              _imageFile != null
+                  ? Image.file(
+                      _imageFile!,
+                      height: 100,
+                    )
+                  : Container(
+                      height: 100,
+                      color: Colors.grey[300],
                     ),
-                  );
-                },
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    onPressed: () {
+                      pickedImage = _pickImage(ImageSource.gallery);
+                    },
+                    child: Text('Gallery'),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      pickedImage = _pickImage(ImageSource.camera);
+                    },
+                    child: Text('Camera'),
+                  ),
+                ],
               ),
-            ),
-          ],
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextFormField(
+                  controller: _brandController,
+                  decoration: InputDecoration(
+                    hintText: 'Product Brand',
+                  ),
+                  validator: (value) =>
+                      _validateFormField(value, 'Product Brand'),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    hintText: 'Product Name',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _sellerIDController,
+                  decoration: InputDecoration(
+                    hintText: 'Seller ID',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _priceController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    hintText: 'Product Price',
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _categoryController,
+                  decoration: InputDecoration(
+                    hintText: 'Product Category',
+                  ),
+                ),
+              ),
+              ElevatedButton(
+                  child: _isLoading
+                      ? CircularProgressIndicator()
+                      : Text('Add Product'),
+                  onPressed: () {
+                    if (_formKey.currentState!.validate()) {
+                      _formKey.currentState!.save();
+                      addProduct();
+                      KeyboardUtil.hideKeyboard(context);
+                    }
+                  }),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _products.length,
+                  itemBuilder: (context, index) {
+                    final product = _products[index];
+                    return ListTile(
+                      leading: product['image'] != null
+                          ? Image.file(
+                              File(product['image']),
+                              height: 50,
+                            )
+                          : Container(
+                              height: 50,
+                              width: 50,
+                              color: Colors.grey[300],
+                            ),
+                      title: Text('${product['brand']} ${product['name']}'),
+                      subtitle: Text('\$${product['price']}'),
+                      trailing: IconButton(
+                        icon: Icon(Icons.delete),
+                        onPressed: () => _deleteProduct(index),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
