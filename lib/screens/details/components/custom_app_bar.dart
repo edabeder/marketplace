@@ -5,9 +5,9 @@ import '/constants.dart';
 import '../../../size_config.dart';
 
 class CustomAppBar extends StatelessWidget {
-  final double rating;
 
-  CustomAppBar({required this.rating, required void Function() onIncrement, required int count});
+  const CustomAppBar({super.key, required this.rating, required void Function() onIncrement, required int count});
+  final double rating;
 
   @override
   // AppBar().preferredSize.height provide us the height that appy on our app bar
@@ -26,21 +26,20 @@ class CustomAppBar extends StatelessWidget {
               width: getProportionateScreenWidth(40),
               child: TextButton(
                 style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
+                  foregroundColor: kPrimaryColor, shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(60),
                   ),
-                  primary: kPrimaryColor,
                   backgroundColor: Colors.white,
                   padding: EdgeInsets.zero,
                 ),
                 onPressed: () => Navigator.pop(context),
                 child: SvgPicture.asset(
-                  "assets/icons/Back ICon.svg",
+                  'assets/icons/Back ICon.svg',
                   height: 15,
                 ),
               ),
             ),
-            Spacer(),
+            const Spacer(),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
               decoration: BoxDecoration(
@@ -50,14 +49,14 @@ class CustomAppBar extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    "$rating",
+                    '$rating',
                     style: const TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                   const SizedBox(width: 5),
-                  SvgPicture.asset("assets/icons/Star Icon.svg"),
+                  SvgPicture.asset('assets/icons/Star Icon.svg'),
                 ],
               ),
             )

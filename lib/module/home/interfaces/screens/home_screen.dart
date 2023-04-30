@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:untitled1/screens/home/custom_home_screen.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
 import '/infrastructures/service/cubit/web3_cubit.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
 // Database connection object
-var connection = PostgreSQLConnection(
+PostgreSQLConnection connection = PostgreSQLConnection(
   '10.0.2.2', 5432, 'GeekchainDB', username: 'postgres', password: '1234');
 
  void connectDB() async{
@@ -65,7 +66,7 @@ var connection = PostgreSQLConnection(
 
 
   if (result.length == 1) {
-     for (var element in result) {
+     for (Map<String, Map<String, dynamic>> element in result) {
       print(result);         
      }
    }
@@ -118,7 +119,7 @@ void saveWalletAddress(int id) async
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // get input for amount
-    var amount = EtherAmount.inWei(BigInt.from(100));
+    EtherAmount amount = EtherAmount.inWei(BigInt.from(100));
     context.read<Web3Cubit>().loadToBuyerContract(amount);
   }
   // SELLER FUNCTIONS
@@ -248,7 +249,7 @@ void saveWalletAddress(int id) async
                           children: <Widget>[
                             Text(
                               'Account Address: ',
-                              style: theme.textTheme.subtitle2,
+                              style: theme.textTheme.titleSmall,
                             ),
                             Expanded(
                               flex: 1,
@@ -257,7 +258,7 @@ void saveWalletAddress(int id) async
                                 child: Text(
                                   accountAddress,
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.subtitle2,
+                                  style: theme.textTheme.titleSmall,
                                 ),
                               ),
                             ),
@@ -277,11 +278,11 @@ void saveWalletAddress(int id) async
                           children: <Widget>[
                             Text(
                               'Chain: ',
-                              style: theme.textTheme.subtitle2,
+                              style: theme.textTheme.titleSmall,
                             ),
                             Text(
                               networkName,
-                              style: theme.textTheme.subtitle2,
+                              style: theme.textTheme.titleSmall,
                             ),
                           ],
                         ),
@@ -291,71 +292,6 @@ void saveWalletAddress(int id) async
                 ),
                 Column(
                   children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.07,
-                        vertical: height * 0.03,
-                      ),
-                      margin: EdgeInsets.only(
-                        left: width * 0.03,
-                        right: width * 0.03,
-                        bottom: height * 0.03,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: flirtGradient),
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(10),
-                          top: Radius.circular(10),
-                        ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(
-                                0, 13), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(60),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
-                            ),
-                            width: width,
-                            child: BlocBuilder<Web3Cubit, Web3State>(
-                              buildWhen:
-                                  (Web3State previous, Web3State current) =>
-                                      current is FetchGreetingSuccess ||
-                                      current is TransactionLoading,
-                              builder: (BuildContext context, Web3State state) {
-                                if (state is FetchGreetingSuccess) {
-                                  return Text(
-                                    '"${state.message}"',
-                                    style: theme.textTheme.headline6?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  );
-                                }
-                                return LinearProgressIndicator(
-                                  backgroundColor: Colors.transparent,
-                                  color: Colors.white.withOpacity(0.5),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: width * 0.07,
@@ -382,19 +318,6 @@ void saveWalletAddress(int id) async
                       ),
                       child: Column(
                         children: <Widget>[
-                          TextField(
-                            controller: greetingTextController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Colors.white),
-                              ),
-                              hintText: 'What\'s in your head?',
-                              fillColor: Colors.white.withAlpha(60),
-                              filled: true,
-                            ),
-                          ),
                           SizedBox(
                             width: width,
                             child: BlocBuilder<Web3Cubit, Web3State>(
@@ -418,11 +341,14 @@ void saveWalletAddress(int id) async
                                     label: const Text(''),
                                   );
                                 }
-                                return ElevatedButton.icon(
-                                  onPressed: connectDB,
-                                  icon: const Icon(Icons.edit),
-                                  label: const Text('Get balance'),
-                                  style: buttonStyle,
+                                return ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const CustomHomeScreen()),
+                                      );
+                                    },
+                                  style: buttonStyle, child: Text("Successfully connected. Go back to home."),
                                 );
                               },
                             ),
@@ -460,7 +386,7 @@ void saveWalletAddress(int id) async
                             Icons.power_settings_new,
                           ),
                           label: Text('Disconnect',
-                              style: theme.textTheme.subtitle1),
+                              style: theme.textTheme.titleMedium),
                           style: ButtonStyle(
                             elevation: MaterialStateProperty.all(0),
                             backgroundColor: MaterialStateProperty.all(

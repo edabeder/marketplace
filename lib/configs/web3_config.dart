@@ -5,7 +5,6 @@ import 'package:walletconnect_dart/walletconnect_dart.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:http/http.dart' as http;
 
-import '../internal/walletconnect_session_storage.dart';
 
 /// Return a wallet connect object with a session storage, to persist the wallet session.
 Future<WalletConnect> get walletConnect async {

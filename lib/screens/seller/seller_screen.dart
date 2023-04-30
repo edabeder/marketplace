@@ -1,10 +1,16 @@
 import 'dart:async';
+import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../helper/keyboard.dart';
 
 import '../../helper/keyboard.dart';
 
@@ -154,6 +160,10 @@ class _SellerScreenState extends State<SellerScreen> {
       //final byteaValue = result.first[0] as List<int>;
       //final imageData = Uint8List.fromList(byteaValue); Tekrar resim formatına çevirecek
 
+      //final result = await postgres.query(''); Bytea Querysi  buraya yazılacak
+      //final byteaValue = result.first[0] as List<int>;
+      //final imageData = Uint8List.fromList(byteaValue); Tekrar resim formatına çevirecek
+
       if (pickedFile != null) {
         final imageFile = File(pickedFile.path);
         final bytes = await imageFile.readAsBytes();
@@ -221,6 +231,128 @@ class _SellerScreenState extends State<SellerScreen> {
                   ),
                   validator: (value) =>
                       _validateFormField(value, 'Product Brand'),
+                ),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      SizedBox(height: 20),
+                      _imageFile != null
+                          ? Image.file(
+                              _imageFile!,
+                              height: 100,
+                            )
+                          : Container(
+                              height: 100,
+                              color: Colors.grey[300],
+                            ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              pickedImage = _pickImage(ImageSource.gallery);
+                            },
+                            child: Text('Gallery'),
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
+                              pickedImage = _pickImage(ImageSource.camera);
+                            },
+                            child: Text('Camera'),
+                          ),
+                        ],
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          controller: _brandController,
+                          decoration: InputDecoration(
+                            hintText: 'Product Brand',
+                          ),
+                          validator: (value) =>
+                              _validateFormField(value, 'Product Brand'),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _nameController,
+                          decoration: InputDecoration(
+                            hintText: 'Product Name',
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _sellerIDController,
+                          decoration: InputDecoration(
+                            hintText: 'Seller ID',
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _priceController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            hintText: 'Product Price',
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextField(
+                          controller: _categoryController,
+                          decoration: InputDecoration(
+                            hintText: 'Product Category',
+                          ),
+                        ),
+                      ),
+                      ElevatedButton(
+                          child: _isLoading
+                              ? CircularProgressIndicator()
+                              : Text('Add Product'),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              addProduct();
+                              KeyboardUtil.hideKeyboard(context);
+                            }
+                          }),
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount: _products.length,
+                          itemBuilder: (context, index) {
+                            final product = _products[index];
+                            return ListTile(
+                              leading: product['image'] != null
+                                  ? Image.file(
+                                      File(product['image']),
+                                      height: 50,
+                                    )
+                                  : Container(
+                                      height: 50,
+                                      width: 50,
+                                      color: Colors.grey[300],
+                                    ),
+                              title: Text(
+                                  '${product['brand']} ${product['name']}'),
+                              subtitle: Text('\$${product['price']}'),
+                              trailing: IconButton(
+                                icon: Icon(Icons.delete),
+                                onPressed: () => _deleteProduct(index),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               Padding(

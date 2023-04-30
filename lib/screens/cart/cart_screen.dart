@@ -1,17 +1,15 @@
 import 'package:flutter/material.dart';
 import '/screens/cart/components/cart_card.dart';
 import '/size_config.dart';
-import 'package:flutter/material.dart';
 import '/models/Cart.dart';
 
-import 'components/body.dart';
 import 'components/check_out_card.dart';
 
-import '../../models/Cart.dart';
-import 'components/check_out_card.dart';
 
 class CartScreen extends StatefulWidget {
-  static String routeName = "/cart";
+  const CartScreen({super.key});
+
+  static String routeName = '/cart';
   @override
   _CartScreenState createState() => _CartScreenState();
 }
@@ -23,24 +21,24 @@ class _CartScreenState extends State<CartScreen> {
       appBar: buildAppBar(context),
       body: ListView.builder(
         itemCount: demoCarts.length,
-        itemBuilder: (context, index) => Padding(
-          padding: EdgeInsets.symmetric(vertical: 10),
+        itemBuilder: (BuildContext context, int index) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Dismissible(
             key: Key(demoCarts[index].product.id.toString()),
             direction: DismissDirection.endToStart,
-            onDismissed: (direction) {
+            onDismissed: (DismissDirection direction) {
               setState(() {
                 demoCarts.removeAt(index);
               });
             },
             background: Container(
-              padding: EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               decoration: BoxDecoration(
-                color: Color(0xFFFFE6E6),
+                color: const Color(0xFFFFE6E6),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: Row(
-                children: [
+                children: const [
                   Spacer(),
                   Icon(Icons.delete),
                 ],
@@ -50,7 +48,7 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
       ),
-      bottomNavigationBar: CheckoutCard(),
+      bottomNavigationBar: const CheckoutCard(),
     );
   }
 
@@ -58,22 +56,24 @@ class _CartScreenState extends State<CartScreen> {
     return AppBar(
       title: Column(
         children: [
-          Text(
-            "Your Cart",
+          const Text(
+            'Your Cart',
             style: TextStyle(color: Colors.black),
           ),
           Text(
-            "${demoCarts.length} items",
-            style: Theme.of(context).textTheme.caption,
+            '${demoCarts.length} items',
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ],
       ),
       actions: [
         IconButton(
-          icon: Icon(Icons.add_shopping_cart),
+          icon: const Icon(Icons.add_shopping_cart),
           onPressed: () {
             setState(() {
-              demoCarts.forEach((cart) => cart.numOfItem++);
+              for (Cart cart in demoCarts) {
+                cart.numOfItem++;
+              }
             });
           },
         ),

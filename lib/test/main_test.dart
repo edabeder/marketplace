@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:untitled1/configs/themes.dart';
+import '/configs/themes.dart';
 
 Future<void> loadAllDependencies() async {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -11,7 +11,7 @@ Future<void> loadAllDependencies() async {
 
 // initialize snackbarkey to be reusable even outside context
 final GlobalKey<ScaffoldMessengerState> snackbarKey =
-GlobalKey<ScaffoldMessengerState>();
+    GlobalKey<ScaffoldMessengerState>();
 
 Widget universalPumper(Widget child, {NavigatorObserver? observer}) {
   return Builder(

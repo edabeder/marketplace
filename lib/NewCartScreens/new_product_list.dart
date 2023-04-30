@@ -33,32 +33,32 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cart  = Provider.of<CartProvider>(context);
+    final CartProvider cart  = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product List'),
+        title: const Text('Product List'),
         centerTitle: true,
         actions: [
           InkWell(
             onTap: (){
-              Navigator.push(context,MaterialPageRoute(builder: (context) => NewCartScreen()));
+              Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => const NewCartScreen()));
             },
             child: Center(
               child: badges.Badge(
                 showBadge: true,
                 badgeContent: Consumer<CartProvider>(
-                  builder: (context, value , child){
-                    return Text(value.getCounter().toString(),style: TextStyle(color: Colors.white));
+                  builder: (BuildContext context, CartProvider value , Widget? child){
+                    return Text(value.getCounter().toString(),style: const TextStyle(color: Colors.white));
                   },
                 ),
                 animationType: BadgeAnimationType.fade,
-                animationDuration: Duration(milliseconds: 300),
-                child: Icon(Icons.shopping_bag_outlined),
+                animationDuration: const Duration(milliseconds: 300),
+                child: const Icon(Icons.shopping_bag_outlined),
               ),
             ),
           ),
 
-          SizedBox(width: 20.0)
+          const SizedBox(width: 20.0)
         ],
       ),
       body: Column(
@@ -66,7 +66,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           Expanded(
             child: ListView.builder(
                 itemCount: productName.length,
-                itemBuilder: (context, index){
+                itemBuilder: (BuildContext context, int index){
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -84,20 +84,20 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 width: 100,
                                 image: NetworkImage(productImage[index].toString()),
                               ),
-                              SizedBox(width: 10,),
+                              const SizedBox(width: 10,),
                               Expanded(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(productName[index].toString() ,
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
-                                    SizedBox(height: 5,),
-                                    Text(productUnit[index].toString() +" "+r"$"+ productPrice[index].toString() ,
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                    const SizedBox(height: 5,),
+                                    Text(productUnit[index].toString() +' '+r'$'+ productPrice[index].toString() ,
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
-                                    SizedBox(height: 5,),
+                                    const SizedBox(height: 5,),
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: InkWell(
@@ -121,18 +121,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                                   quantity: 1,
                                                   unitTag: productUnit[index].toString(),
                                                   image: productImage[index].toString())
-                                          ).then((value){
+                                          ).then((Cart value){
 
                                             cart.addTotalPrice(double.parse(productPrice[index].toString()));
                                             cart.addCounter();
 
-                                            final snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
+                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                                          }).onError((error, stackTrace){
-                                            print("error"+error.toString());
-                                            final snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
+                                          }).onError((Object? error, StackTrace stackTrace){
+                                            print('error$error');
+                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                           });

@@ -54,11 +54,11 @@ class _OtpFormState extends State<OtpForm> {
                 child: TextFormField(
                   autofocus: true,
                   obscureText: true,
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
-                  onChanged: (value) {
+                  onChanged: (String value) {
                     nextField(value, pin2FocusNode);
                   },
                 ),
@@ -68,11 +68,11 @@ class _OtpFormState extends State<OtpForm> {
                 child: TextFormField(
                   focusNode: pin2FocusNode,
                   obscureText: true,
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
-                  onChanged: (value) => nextField(value, pin3FocusNode),
+                  onChanged: (String value) => nextField(value, pin3FocusNode),
                 ),
               ),
               SizedBox(
@@ -80,11 +80,11 @@ class _OtpFormState extends State<OtpForm> {
                 child: TextFormField(
                   focusNode: pin3FocusNode,
                   obscureText: true,
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
-                  onChanged: (value) => nextField(value, pin4FocusNode),
+                  onChanged: (String value) => nextField(value, pin4FocusNode),
                 ),
               ),
               SizedBox(
@@ -92,11 +92,11 @@ class _OtpFormState extends State<OtpForm> {
                 child: TextFormField(
                   focusNode: pin4FocusNode,
                   obscureText: true,
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                   keyboardType: TextInputType.number,
                   textAlign: TextAlign.center,
                   decoration: otpInputDecoration,
-                  onChanged: (value) {
+                  onChanged: (String value) {
                     if (value.length == 1) {
                       pin4FocusNode!.unfocus();
                       // Then you need to check is the code is correct or not
@@ -108,7 +108,7 @@ class _OtpFormState extends State<OtpForm> {
           ),
           SizedBox(height: SizeConfig.screenHeight * 0.15),
           DefaultButton(
-            text: "Continue",
+            text: 'Continue',
             press: () {},
           )
         ],

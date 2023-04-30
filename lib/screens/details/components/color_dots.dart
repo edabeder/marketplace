@@ -24,12 +24,12 @@ class ColorDots extends StatelessWidget {
         children: [
           ...List.generate(
             product.colors.length,
-            (index) => ColorDot(
+            (int index) => ColorDot(
               color: product.colors[index],
               isSelected: index == selectedColor,
             ),
           ),
-          Spacer(),
+          const Spacer(),
           RoundedIconBtn(
             icon: Icons.remove,
             press: () {},
@@ -59,7 +59,7 @@ class ColorDot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(right: 2),
+      margin: const EdgeInsets.only(right: 2),
       padding: EdgeInsets.all(getProportionateScreenWidth(8)),
       height: getProportionateScreenWidth(40),
       width: getProportionateScreenWidth(40),
