@@ -23,22 +23,18 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     );
 
     /// If there is an exisitng app, just launch the app.
-    print(!isInstalled);
     if (!isInstalled) {
       if (!mounted) return;
       context.read<AuthCubit>().loginWithMetamask();
-      print("metamaski açtım");
       return;
     }
 
-    print("metamask açamadım");
     /// If there is no exisitng app, launch app store.
     await LaunchApp.openApp(
       androidPackageName: metaMaskPackageName,
       iosUrlScheme: metamaskWalletScheme,
       appStoreLink: metamaskAppsStoreLink,
     );
-    print("sj");
 
   }
 
@@ -145,7 +141,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                           ),
                           ElevatedButton(onPressed: () {
                             Navigator.pop(context);
-                          }, child: Text("aa"))
+                          }, child: Text("Go Back To Home"))
                         ],
                       ),
                     ],

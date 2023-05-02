@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:untitled1/screens/home/custom_home_screen.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
@@ -30,7 +29,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String accountAddress = '';
   String networkName = '';
+  late String contractAddress = '';
   TextEditingController greetingTextController = TextEditingController();
+  bool showCreateContractButton = false;
   
   ButtonStyle buttonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all(0),
@@ -54,7 +55,7 @@ PostgreSQLConnection connection = PostgreSQLConnection(
     await connection.open();
     print('Connection opened successfully!');
   }
-  saveWalletAddress(1);
+  
  }
  dynamic sellerAddressQuery(int row) async
  {
@@ -72,7 +73,7 @@ PostgreSQLConnection connection = PostgreSQLConnection(
    }
    return result;
  }
-void saveWalletAddress(int id) async
+ void saveWalletAddress(int id) async
 {
     List<Map<String, Map<String, dynamic>>> result = await connection
     .mappedResultsQuery('UPDATE public.customer SET walletaddress = @aAddress WHERE id = @aID',
@@ -80,6 +81,7 @@ void saveWalletAddress(int id) async
        'aAddress': accountAddress,
        'aID': id,
        });
+         print("Successfully saved address $accountAddress to customer ${id.toString()}");
 }
   /*void updateGreeting() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
@@ -89,26 +91,50 @@ void saveWalletAddress(int id) async
   }*/
 
   // BUYER FUNCTIONS
-  void createBuyerContract() {
-    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
+  void checkButtonStatus() async
+  {
+    EthereumAddress responseAddress = await context.read<Web3Cubit>().getBuyerContract();
 
+    if (responseAddress == EthereumAddress.fromHex('0x0000000000000000000000000000000000000000')) {
+      setState(() {
+        showCreateContractButton = true;
+        contractAddress = responseAddress.hex;
+      });
+      print("no contract address");
+    }else {
+      setState(() {
+        showCreateContractButton = false;
+        contractAddress = responseAddress.hex;
+      });
+      print("contract address exists" + contractAddress);
+    }
+
+  }
+  void createBuyerContract() {
+    
+    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
     context.read<Web3Cubit>().createBuyerContract();
+
+  } 
+   void getBuyerContract() async{
+     EthereumAddress e = await context.read<Web3Cubit>().getBuyerContract();
+     contractAddress = e.hex;
   }
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
-
-    context.read<Web3Cubit>().payShopping();
+    List<String> sellers = List.empty(growable: true);
+    List<String> info = List.empty(growable: true);
+    List<String> prices = List.empty(growable: true);
+    context.read<Web3Cubit>().payShopping(sellers, info, prices);
   }
   void requestReturn(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
     
     context.read<Web3Cubit>().requestReturn(sellerAddressQuery(row), row);
   }
-  void getBuyerContract() {
-    context.read<Web3Cubit>().getBuyerContract();
-  }
-  void getBuyerContractBalance() {
-    context.read<Web3Cubit>().getBuyerContractBalance();
+
+  dynamic getBuyerContractBalance() {
+    return context.read<Web3Cubit>().getBuyerContractBalance();
   }
   void scanTransaction() {
     // DB conn
@@ -155,6 +181,11 @@ void saveWalletAddress(int id) async
             session: widget.session,
           ),
     );
+    //connectDB();
+    //saveWalletAddress(1); /** id alınacak */
+      Future.delayed(Duration(seconds: 1), () {
+    checkButtonStatus();
+  });
   }
 
   @override
@@ -341,15 +372,69 @@ void saveWalletAddress(int id) async
                                     label: const Text(''),
                                   );
                                 }
-                                return ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => const CustomHomeScreen()),
-                                      );
-                                    },
-                                  style: buttonStyle, child: Text("Successfully connected. Go back to home."),
-                                );
+                                  return Column(
+                                  children: [
+                                    const Text(
+                                      "Connected to MetaMask successfully!",
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.0),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const CustomHomeScreen()),
+                                          );
+                                        },
+                                        style: buttonStyle,
+                                        child: const Text("Back To App"),
+                                      ),
+                                      const SizedBox(height: 16),
+                                  showCreateContractButton
+                                      ? const Text(
+                                          "Create a contract to start shopping!",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ) :  const Text(
+                                          "Your contract address: ",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ), 
+                                          ), 
+                                     const SizedBox(height: 16),
+                                  showCreateContractButton
+                                      ? ElevatedButton(
+                                          onPressed: () {
+                                            //createBuyerContract();
+                                            //createSellerContract();
+                                            print("contract created");
+                                            getBuyerContract();
+                                              setState(() {
+                                                showCreateContractButton = false;
+                                              });
+                                          },
+                                          style: buttonStyle,
+                                          child: const Text("Create My Contract Now"),
+                                        )
+                                      :  Text(
+                                          contractAddress,
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),  
+                                    ],
+                                  );
                               },
                             ),
                           ),
