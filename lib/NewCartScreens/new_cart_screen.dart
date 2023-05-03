@@ -111,7 +111,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                 ),
 
                                                 const SizedBox(height: 5,),
-                                                Text(snapshot.data![index].unitTag.toString() +' '+r'$'+ snapshot.data![index].productPrice.toString() ,
+                                                Text(' '+r'$'+ snapshot.data![index].productPrice.toString() ,
                                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                                 ),
                                                 const SizedBox(height: 5,),
@@ -126,7 +126,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                       height: 35,
                                                       width: 100,
                                                       decoration: BoxDecoration(
-                                                          color: Colors.green,
+                                                          color: Colors.orange.shade300,
                                                           borderRadius: BorderRadius.circular(5)
                                                       ),
                                                       child:  Padding(
