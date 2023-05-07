@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:postgres/postgres.dart'; // postgres SQL
 import '/configs/themes.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:untitled1/NewCartScreens/Product.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -30,6 +31,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String accountAddress = '';
   String networkName = '';
   late String contractAddress = '';
+  String amountInput = '';
+  late BigInt balance = BigInt.zero;
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
   
@@ -55,7 +58,9 @@ PostgreSQLConnection connection = PostgreSQLConnection(
     await connection.open();
     print('Connection opened successfully!');
   }
-  
+
+  var p = Product.empty();
+  p.getProducts(connection);
  }
  dynamic sellerAddressQuery(int row) async
  {
@@ -122,10 +127,9 @@ PostgreSQLConnection connection = PostgreSQLConnection(
   }
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
-    List<String> sellers = List.empty(growable: true);
-    List<String> info = List.empty(growable: true);
-    List<String> prices = List.empty(growable: true);
-    context.read<Web3Cubit>().payShopping(sellers, info, prices);
+    var product = Product.empty();
+    product.buyProducts();
+    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices);
   }
   void requestReturn(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
@@ -133,19 +137,22 @@ PostgreSQLConnection connection = PostgreSQLConnection(
     context.read<Web3Cubit>().requestReturn(sellerAddressQuery(row), row);
   }
 
-  dynamic getBuyerContractBalance() {
-    return context.read<Web3Cubit>().getBuyerContractBalance();
+  void getBuyerContractBalance() async{
+    BigInt getBalance = await context.read<Web3Cubit>().getBuyerContractBalance();
+          setState(() {
+            balance = getBalance;
+      });
   }
   void scanTransaction() {
     // DB conn
     context.read<Web3Cubit>().scanTransaction(0);
   }
-  void loadToBuyerContract()
+  void loadToBuyerContract(int input)
   {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // get input for amount
-    EtherAmount amount = EtherAmount.inWei(BigInt.from(100));
+    EtherAmount amount = EtherAmount.inWei(BigInt.from(input));
     context.read<Web3Cubit>().loadToBuyerContract(amount);
   }
   // SELLER FUNCTIONS
@@ -181,10 +188,11 @@ PostgreSQLConnection connection = PostgreSQLConnection(
             session: widget.session,
           ),
     );
-    //connectDB();
+    connectDB();
     //saveWalletAddress(1); /** id alınacak */
       Future.delayed(Duration(seconds: 1), () {
     checkButtonStatus();
+    getBuyerContractBalance();
   });
   }
 
@@ -432,7 +440,55 @@ PostgreSQLConnection connection = PostgreSQLConnection(
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                           ),
-                                        ),  
+                                        ),
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      : TextField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            amountInput = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter an amount (in wei)',
+                                        ),
+                                      ),
+                                        const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      : ElevatedButton(
+                                          onPressed: () {
+                                        try {
+                                          int inputValue = int.parse(amountInput);
+                                          loadToBuyerContract(inputValue);
+                                          print("Loaded: " + amountInput);
+                                          getBuyerContractBalance();
+                                        } catch (e) {
+                                          print(e);
+                                          // Display an error message to the user
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Error: Invalid input.'),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                          style: buttonStyle,
+                                          child: const Text("Load To My Contract"),
+                                        ),
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      :  Text(
+                                          "Balance: " + balance.toString(),
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ), 
+                                          
+                                      ),                                        
                                     ],
                                   );
                               },
