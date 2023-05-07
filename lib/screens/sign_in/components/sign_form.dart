@@ -13,14 +13,16 @@ import '../../../constants.dart';
 import '../../../size_config.dart';
 
 class SignForm extends StatefulWidget {
+  const SignForm({super.key});
+
   @override
   _SignFormState createState() => _SignFormState();
 }
 
 class _SignFormState extends State<SignForm> {
-  final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   String? email;
   String? password;
   bool? remember = false;
@@ -34,17 +36,19 @@ class _SignFormState extends State<SignForm> {
   }
 
   void addError({String? error}) {
-    if (!errors.contains(error))
+    if (!errors.contains(error)) {
       setState(() {
         errors.add(error);
       });
+    }
   }
 
   void removeError({String? error}) {
-    if (errors.contains(error))
+    if (errors.contains(error)) {
       setState(() {
         errors.remove(error);
       });
+    }
   }
 
   Future<bool> isUserSeller(String email) async {
@@ -60,14 +64,14 @@ class _SignFormState extends State<SignForm> {
 
   Future<void> loginUser(String email, String password) async {
     if (_formKey.currentState!.validate()) {
-      final url = 'http://10.0.2.2:3000/api/login';
-      final response = await Dio().post(url, data: {
+      const String url = 'http://10.0.2.2:3000/api/login';
+      final Response response = await Dio().post(url, data: {
         'email': email,
         'password': password,
       });
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Login succesful'),
           ),
         );
@@ -106,19 +110,19 @@ class _SignFormState extends State<SignForm> {
               Checkbox(
                 value: remember,
                 activeColor: kPrimaryColor,
-                onChanged: (value) {
+                onChanged: (bool? value) {
                   setState(() {
                     remember = value;
                   });
                 },
               ),
-              Text("Remember me"),
-              Spacer(),
+              const Text('Remember me'),
+              const Spacer(),
               GestureDetector(
                 onTap: () => Navigator.pushNamed(
                     context, ForgotPasswordScreen.routeName),
-                child: Text(
-                  "Forgot Password",
+                child: const Text(
+                  'Forgot Password',
                   style: TextStyle(decoration: TextDecoration.underline),
                 ),
               )
@@ -127,7 +131,7 @@ class _SignFormState extends State<SignForm> {
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(20)),
           ElevatedButton(
-            child: const Text("Continue"),
+            child: const Text('Continue'),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
@@ -145,8 +149,8 @@ class _SignFormState extends State<SignForm> {
     return TextFormField(
       obscureText: true,
       controller: _passwordController,
-      onSaved: (newValue) => password = newValue!,
-      onChanged: (value) {
+      onSaved: (String? newValue) => password = newValue!,
+      onChanged: (String value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);
         } else if (value.length >= 6) {
@@ -154,21 +158,21 @@ class _SignFormState extends State<SignForm> {
         }
         password = value;
       },
-      validator: (value) {
+      validator: (String? value) {
         if (value!.isEmpty) {
           addError(error: kPassNullError);
-          return "";
+          return '';
         } else if (value.length < 6) {
           addError(error: kShortPassError);
-          return "";
+          return '';
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Password",
-        hintText: "Enter your password",
+      decoration: const InputDecoration(
+        labelText: 'Password',
+        hintText: 'Enter your password',
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: 'assets/icons/Lock.svg'),
       ),
     );
   }
@@ -176,7 +180,7 @@ class _SignFormState extends State<SignForm> {
   TextFormField buildEmailFormField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      onSaved: (newValue) => email = newValue!,
+      onSaved: (String? newValue) => email = newValue!,
       /*onChanged: (value) {
         if (value.isNotEmpty) {
           removeError(error: kEmailNullError);
@@ -186,23 +190,23 @@ class _SignFormState extends State<SignForm> {
         return null;
       }, */
       //onChanged: (e) => _message = e,
-      validator: (value) {
+      validator: (String? value) {
         if (value!.isEmpty) {
           addError(error: kEmailNullError);
-          return "";
+          return '';
         } else if (!emailValidatorRegExp.hasMatch(value)) {
           addError(error: kInvalidEmailError);
-          return "";
+          return '';
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Email",
-        hintText: "Enter your email",
+      decoration: const InputDecoration(
+        labelText: 'Email',
+        hintText: 'Enter your email',
         // If  you are using latest version of flutter then lable text and hint text shown like this
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: 'assets/icons/Mail.svg'),
       ),
     );
   }
