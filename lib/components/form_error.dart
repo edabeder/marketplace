@@ -15,7 +15,7 @@ class FormError extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: List.generate(
-          errors.length, (index) => formErrorText(error: errors[index]!)),
+          errors.length, (int index) => formErrorText(error: errors[index]!)),
     );
   }
 
@@ -23,7 +23,7 @@ class FormError extends StatelessWidget {
     return Row(
       children: [
         SvgPicture.asset(
-          "assets/icons/Error.svg",
+          'assets/icons/Error.svg',
           height: getProportionateScreenWidth(14),
           width: getProportionateScreenWidth(14),
         ),

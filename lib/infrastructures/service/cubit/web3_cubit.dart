@@ -135,7 +135,7 @@ class Web3Cubit extends Cubit<Web3State> {
       emit(TransactionFailed(errorCode: '', message: e.toString()));
     }
   }
-  Future<dynamic> getBuyerContract() async {
+  Future<EthereumAddress> getBuyerContract() async {
   try {
     List<dynamic> response = await web3Client.call(
       contract: customerContract,
@@ -143,10 +143,11 @@ class Web3Cubit extends Cubit<Web3State> {
       params: <dynamic>[EthereumAddress.fromHex(sender)],
     );
     print(response[0]); // contract address
+    
     return response[0];
   } catch (e) {
     emit(FetchingFailed(errorCode: '', message: e.toString()));
-    return '';
+    return EthereumAddress.fromHex('0x0000000000000000000000000000000000000000');
   }
 }
 Future<dynamic> getBuyerContractBalance() async {
@@ -177,14 +178,8 @@ Future<dynamic> scanTransaction(int index) async {
     return '';
   }
 }
-Future<void> payShopping() async {
+Future<void> payShopping(sellers, info, prices) async {
     emit(TransactionLoading());
-    List<String> sellers = List.empty(growable: true);
-    List<String> info = List.empty(growable: true);
-    List<String> prices = List.empty(growable: true);
-
-    /// fill the arrays from the basket
-    /// compare the balance wiith the total amount
     try {
       String txnHash = await web3Client.sendTransaction(
         wcCredentials,

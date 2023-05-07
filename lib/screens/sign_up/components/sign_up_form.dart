@@ -9,12 +9,14 @@ import '../../../size_config.dart';
 
 
 class SignUpForm extends StatefulWidget {
+  const SignUpForm({super.key});
+
   @override
   _SignUpFormState createState() => _SignUpFormState();
 }
 
 class _SignUpFormState extends State<SignUpForm> {
-  final _formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? email;
   String? password;
   String? conform_password;
@@ -22,17 +24,19 @@ class _SignUpFormState extends State<SignUpForm> {
   final List<String?> errors = [];
 
   void addError({String? error}) {
-    if (!errors.contains(error))
+    if (!errors.contains(error)) {
       setState(() {
         errors.add(error);
       });
+    }
   }
 
   void removeError({String? error}) {
-    if (errors.contains(error))
+    if (errors.contains(error)) {
       setState(() {
         errors.remove(error);
       });
+    }
   }
 
   @override
@@ -49,7 +53,7 @@ class _SignUpFormState extends State<SignUpForm> {
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(40)),
           DefaultButton(
-            text: "Continue",
+            text: 'Continue',
             press: () {
               if (_formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
@@ -66,8 +70,8 @@ class _SignUpFormState extends State<SignUpForm> {
   TextFormField buildConformPassFormField() {
     return TextFormField(
       obscureText: true,
-      onSaved: (newValue) => conform_password = newValue,
-      onChanged: (value) {
+      onSaved: (String? newValue) => conform_password = newValue,
+      onChanged: (String value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);
         } else if (value.isNotEmpty && password == conform_password) {
@@ -75,23 +79,23 @@ class _SignUpFormState extends State<SignUpForm> {
         }
         conform_password = value;
       },
-      validator: (value) {
+      validator: (String? value) {
         if (value!.isEmpty) {
           addError(error: kPassNullError);
-          return "";
+          return '';
         } else if ((password != value)) {
           addError(error: kMatchPassError);
-          return "";
+          return '';
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Confirm Password",
-        hintText: "Re-enter your password",
+      decoration: const InputDecoration(
+        labelText: 'Confirm Password',
+        hintText: 'Re-enter your password',
         // If  you are using latest version of flutter then lable text and hint text shown like this
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: 'assets/icons/Lock.svg'),
       ),
     );
   }
@@ -99,8 +103,8 @@ class _SignUpFormState extends State<SignUpForm> {
   TextFormField buildPasswordFormField() {
     return TextFormField(
       obscureText: true,
-      onSaved: (newValue) => password = newValue,
-      onChanged: (value) {
+      onSaved: (String? newValue) => password = newValue,
+      onChanged: (String value) {
         if (value.isNotEmpty) {
           removeError(error: kPassNullError);
         } else if (value.length >= 8) {
@@ -108,23 +112,23 @@ class _SignUpFormState extends State<SignUpForm> {
         }
         password = value;
       },
-      validator: (value) {
+      validator: (String? value) {
         if (value!.isEmpty) {
           addError(error: kPassNullError);
-          return "";
+          return '';
         } else if (value.length < 8) {
           addError(error: kShortPassError);
-          return "";
+          return '';
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Password",
-        hintText: "Enter your password",
+      decoration: const InputDecoration(
+        labelText: 'Password',
+        hintText: 'Enter your password',
         // If  you are using latest version of flutter then lable text and hint text shown like this
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Lock.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: 'assets/icons/Lock.svg'),
       ),
     );
   }
@@ -132,32 +136,32 @@ class _SignUpFormState extends State<SignUpForm> {
   TextFormField buildEmailFormField() {
     return TextFormField(
       keyboardType: TextInputType.emailAddress,
-      onSaved: (newValue) => email = newValue,
-      onChanged: (value) {
+      onSaved: (String? newValue) => email = newValue,
+      onChanged: (String value) {
         if (value.isNotEmpty) {
           removeError(error: kEmailNullError);
         } else if (emailValidatorRegExp.hasMatch(value)) {
           removeError(error: kInvalidEmailError);
         }
-        return null;
+        return;
       },
-      validator: (value) {
+      validator: (String? value) {
         if (value!.isEmpty) {
           addError(error: kEmailNullError);
-          return "";
+          return '';
         } else if (!emailValidatorRegExp.hasMatch(value)) {
           addError(error: kInvalidEmailError);
-          return "";
+          return '';
         }
         return null;
       },
-      decoration: InputDecoration(
-        labelText: "Email",
-        hintText: "Enter your email",
+      decoration: const InputDecoration(
+        labelText: 'Email',
+        hintText: 'Enter your email',
         // If  you are using latest version of flutter then lable text and hint text shown like this
         // if you r using flutter less then 1.20.* then maybe this is not working properly
         floatingLabelBehavior: FloatingLabelBehavior.always,
-        suffixIcon: CustomSurffixIcon(svgIcon: "assets/icons/Mail.svg"),
+        suffixIcon: CustomSurffixIcon(svgIcon: 'assets/icons/Mail.svg'),
       ),
     );
   }

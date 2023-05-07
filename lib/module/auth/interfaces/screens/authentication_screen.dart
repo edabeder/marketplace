@@ -15,7 +15,6 @@ class AuthenticationScreen extends StatefulWidget {
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
-  
   Future<void> launchApp() async {
     final bool isInstalled = await LaunchApp.isAppInstalled(
       androidPackageName: metaMaskPackageName,
@@ -23,7 +22,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
     );
 
     /// If there is an exisitng app, just launch the app.
-    if (isInstalled) {
+    if (!isInstalled) {
       if (!mounted) return;
       context.read<AuthCubit>().loginWithMetamask();
       return;
@@ -69,7 +68,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text(state.message),
-              backgroundColor: theme.errorColor,
+              backgroundColor: theme.colorScheme.error,
             ),
           );
         }
@@ -90,8 +89,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 Padding(
                   padding: EdgeInsets.only(bottom: height * 0.4),
                   child: Text(
-                    'Sophon',
-                    style: theme.textTheme.headline3,
+                    'Ethereum Wallet',
+                    style: theme.textTheme.displaySmall,
                   ),
                 ),
                 Container(
@@ -124,7 +123,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                                 width: 16,
                               ),
                               label: Text('Login with Metamask',
-                                  style: theme.textTheme.subtitle1),
+                                  style: theme.textTheme.titleMedium),
                               style: ButtonStyle(
                                 elevation: MaterialStateProperty.all(0),
                                 backgroundColor: MaterialStateProperty.all(
@@ -138,6 +137,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                               ),
                             ),
                           ),
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("aa"))
                         ],
                       ),
                     ],

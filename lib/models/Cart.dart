@@ -1,12 +1,11 @@
-import 'package:flutter/material.dart';
 
 import 'Product.dart';
 
 class Cart {
-  final Product product;
-  late final int numOfItem;
 
   Cart({required this.product, required this.numOfItem});
+  final Product product;
+  late final int numOfItem;
 }
 
 // Demo data for our cart

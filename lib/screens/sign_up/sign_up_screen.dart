@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 
 class SignUp extends StatelessWidget {
+  const SignUp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Add User',
       home: AddUserScreen(),
     );
@@ -13,19 +14,21 @@ class SignUp extends StatelessWidget {
 }
 
 class AddUserScreen extends StatefulWidget {
+  const AddUserScreen({super.key});
+
   @override
   _AddUserScreenState createState() => _AddUserScreenState();
 }
 
 class _AddUserScreenState extends State<AddUserScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final _fnameController = TextEditingController();
-  final _lnameController = TextEditingController();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _passwordController2 = TextEditingController();
-  final _phoneController = TextEditingController();
-  final _birthdayController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final TextEditingController _fnameController = TextEditingController();
+  final TextEditingController _lnameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController2 = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _birthdayController = TextEditingController();
 
   @override
   void dispose() {
@@ -48,8 +51,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      final url = 'http://10.0.2.2:3000/api/users';
-      final response = await Dio().post(url, data: {
+      const String url = 'http://10.0.2.2:3000/api/users';
+      final Response response = await Dio().post(url, data: {
         'fName': _fnameController.text,
         'lname': _lnameController.text,
         'email': _emailController.text,
@@ -61,14 +64,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
       if (response.statusCode == 201) {
         // Kullanıcı başarıyla eklendi
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('User added to database'),
           ),
         );
       } else {
         // İstek başarısız oldu
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('Error adding user to database'),
           ),
         );
@@ -80,7 +83,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add User'),
+        title: const Text('Add User'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -92,41 +95,41 @@ class _AddUserScreenState extends State<AddUserScreen> {
               children: [
                 TextFormField(
                   controller: _fnameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'First Name',
                   ),
-                  validator: (value) => _validateFormField(value, 'First Name'),
+                  validator: (String? value) => _validateFormField(value, 'First Name'),
                 ),
                 TextFormField(
                   controller: _lnameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Last Name',
                   ),
-                  validator: (value) => _validateFormField(value, 'Last Name'),
+                  validator: (String? value) => _validateFormField(value, 'Last Name'),
                 ),
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                   ),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (value) => _validateFormField(value, 'Email'),
+                  validator: (String? value) => _validateFormField(value, 'Email'),
                 ),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Password',
                   ),
                   obscureText: true,
-                  validator: (value) => _validateFormField(value, 'Password'),
+                  validator: (String? value) => _validateFormField(value, 'Password'),
                 ),
                 TextFormField(
                   controller: _passwordController2,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Confirm Password',
                   ),
                   obscureText: true,
-                  validator: (value) {
+                  validator: (String? value) {
                     if (_passwordController.text != value) {
                       return 'Passwords do not match';
                     }
@@ -135,27 +138,27 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 ),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Phone Number',
                   ),
                   keyboardType: TextInputType.phone,
-                  validator: (value) =>
+                  validator: (String? value) =>
                       _validateFormField(value, 'Phone Number'),
                 ),
                 TextFormField(
                   controller: _birthdayController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Birthday (MM/DD/YYYY)',
                   ),
                   keyboardType: TextInputType.datetime,
-                  validator: (value) => _validateFormField(value, 'Birthday'),
+                  validator: (String? value) => _validateFormField(value, 'Birthday'),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 16.0,
                 ),
                 ElevatedButton(
                   onPressed: _submitForm,
-                  child: Text('Ade User'),
+                  child: const Text('Ade User'),
                 ),
               ],
             ),

@@ -16,49 +16,45 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
 
 
-  List<String> productName = ['Mango' , 'Orange' , 'Grapes' , 'Banana' , 'Chery' , 'Peach','Mixed Fruit Basket',] ;
-  List<String> productUnit = ['KG' , 'Dozen' , 'KG' , 'Dozen' , 'KG' , 'KG','KG',] ;
-  List<int> productPrice = [10, 20 , 30 , 40 , 50, 60 , 70 ] ;
+  List<String> productName = ['Dualsense Wireless Controller' , 'Air Jordan 1 Low SE' , 'Iphone 14 Pro Max 128GB 6.7 Black' ,] ;
+  List<String> productUnit = ['KG' , 'Dozen' , 'KG' ] ;
+  List<int> productPrice = [80, 70 , 100] ;
   List<String> productImage = [
-    'https://image.shutterstock.com/image-photo/mango-isolated-on-white-background-600w-610892249.jpg' ,
-    'https://image.shutterstock.com/image-photo/orange-fruit-slices-leaves-isolated-600w-1386912362.jpg' ,
-    'https://image.shutterstock.com/image-photo/green-grape-leaves-isolated-on-600w-533487490.jpg' ,
-    'https://media.istockphoto.com/photos/banana-picture-id1184345169?s=612x612' ,
-    'https://media.istockphoto.com/photos/cherry-trio-with-stem-and-leaf-picture-id157428769?s=612x612' ,
-    'https://media.istockphoto.com/photos/single-whole-peach-fruit-with-leaf-and-slice-isolated-on-white-picture-id1151868959?s=612x612' ,
-    'https://media.istockphoto.com/photos/fruit-background-picture-id529664572?s=612x612' ,
+    'https://gmedia.playstation.com/is/image/SIEPDC/dualsense-thumbnail-ps5-01-en-17jul20?' ,
+    'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/34dec221-0f96-4c6c-b76e-40b42f679e26/air-jordan-1-low-se-ayakkab%C4%B1s%C4%B1-j6GSq5.png' ,
+    'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRg0S6oIC9gdRAXKhz-Wrjrz8F_z1DE3iTWzjc0xynSCOSS2Ox6s8wrGDdovESTCE5cwRCmStmExkjp79_sgFQSfiR9doGRbBgO7FHbYnCIgLh1bZVHdHAg&usqp=CAE' ,
   ] ;
 
   DBHelper? dbHelper = DBHelper();
 
   @override
   Widget build(BuildContext context) {
-    final cart  = Provider.of<CartProvider>(context);
+    final CartProvider cart  = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Product List'),
+        title: const Text('Product List'),
         centerTitle: true,
         actions: [
           InkWell(
             onTap: (){
-              Navigator.push(context,MaterialPageRoute(builder: (context) => NewCartScreen()));
+              Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => const NewCartScreen()));
             },
             child: Center(
               child: badges.Badge(
                 showBadge: true,
                 badgeContent: Consumer<CartProvider>(
-                  builder: (context, value , child){
-                    return Text(value.getCounter().toString(),style: TextStyle(color: Colors.white));
+                  builder: (BuildContext context, CartProvider value , Widget? child){
+                    return Text(value.getCounter().toString(),style: const TextStyle(color: Colors.white));
                   },
                 ),
                 animationType: BadgeAnimationType.fade,
-                animationDuration: Duration(milliseconds: 300),
-                child: Icon(Icons.shopping_bag_outlined),
+                animationDuration: const Duration(milliseconds: 300),
+                child: const Icon(Icons.shopping_bag_outlined),
               ),
             ),
           ),
 
-          SizedBox(width: 20.0)
+          const SizedBox(width: 20.0)
         ],
       ),
       body: Column(
@@ -66,7 +62,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
           Expanded(
             child: ListView.builder(
                 itemCount: productName.length,
-                itemBuilder: (context, index){
+                itemBuilder: (BuildContext context, int index){
                   return Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -84,20 +80,20 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                 width: 100,
                                 image: NetworkImage(productImage[index].toString()),
                               ),
-                              SizedBox(width: 10,),
+                              const SizedBox(width: 10,),
                               Expanded(
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(productName[index].toString() ,
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
-                                    SizedBox(height: 5,),
-                                    Text(productUnit[index].toString() +" "+r"$"+ productPrice[index].toString() ,
-                                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                                    const SizedBox(height: 5,),
+                                    Text(' '+r'$'+ productPrice[index].toString() ,
+                                      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
-                                    SizedBox(height: 5,),
+                                    const SizedBox(height: 5,),
                                     Align(
                                       alignment: Alignment.centerRight,
                                       child: InkWell(
@@ -121,18 +117,18 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                                   quantity: 1,
                                                   unitTag: productUnit[index].toString(),
                                                   image: productImage[index].toString())
-                                          ).then((value){
+                                          ).then((Cart value){
 
                                             cart.addTotalPrice(double.parse(productPrice[index].toString()));
                                             cart.addCounter();
 
-                                            final snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
+                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                                          }).onError((error, stackTrace){
-                                            print("error"+error.toString());
-                                            final snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
+                                          }).onError((Object? error, StackTrace stackTrace){
+                                            print('error$error');
+                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                           });
@@ -141,7 +137,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                                           height: 35,
                                           width: 100,
                                           decoration: BoxDecoration(
-                                              color: Colors.green,
+                                              color: Colors.orange.shade300,
                                               borderRadius: BorderRadius.circular(5)
                                           ),
                                           child: const Center(

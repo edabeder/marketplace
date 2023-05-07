@@ -56,7 +56,6 @@ class _SellerScreenState extends State<SellerScreen> {
           'category': category,
         },
       );
-
       if (response.statusCode == 201) {
         final responseData = jsonDecode(response.body);
         print('New product added: $responseData');
@@ -107,19 +106,15 @@ class _SellerScreenState extends State<SellerScreen> {
 
   /*Future<ByteData?> _pickImage(ImageSource source) async {
     final completer = Completer<ByteData?>();
-
     try {
       final pickedFile = await ImagePicker().getImage(source: source);
-
       print(pickedFile?.readAsBytes());
       print("Hello");
-
       if (pickedFile != null) {
         setState(() {
           _imageFile = File(pickedFile.path);
         });
       }
-
       if (pickedFile != null) {
         final imageFile = File(pickedFile.path);
         final bytes = await imageFile.readAsBytes();
@@ -133,7 +128,6 @@ class _SellerScreenState extends State<SellerScreen> {
       print(e);
       completer.completeError(e);
     }
-
     return completer.future;
   }*/
 

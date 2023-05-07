@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 const Color kPink = Color(0xFFfe6796);
 
 ThemeData buildDefaultTheme(BuildContext context) {
-  final ThemeData base = ThemeData.dark();
+  final ThemeData base = ThemeData.light();
 
   return base.copyWith(
     textTheme: _buildDefaultTextTheme(base.textTheme),
@@ -16,19 +16,19 @@ ThemeData buildDefaultTheme(BuildContext context) {
 
 TextTheme _buildDefaultTextTheme(TextTheme base) {
   return base.copyWith(
-    headline6: base.headline6?.copyWith(fontFamily: 'Raleway'),
-    headline5: base.headline5?.copyWith(fontFamily: 'Raleway'),
-    headline4: base.headline4?.copyWith(fontFamily: 'Raleway'),
-    headline3: base.headline3?.copyWith(fontFamily: 'Raleway'),
-    headline2: base.headline2?.copyWith(fontFamily: 'Raleway'),
-    headline1: base.headline1?.copyWith(fontFamily: 'Raleway'),
-    subtitle2: base.subtitle2?.copyWith(fontFamily: 'Raleway'),
-    subtitle1: base.subtitle1?.copyWith(fontFamily: 'Raleway'),
-    bodyText2: base.bodyText2?.copyWith(fontFamily: 'Raleway'),
-    bodyText1: base.bodyText1?.copyWith(fontFamily: 'Raleway'),
-    caption: base.caption?.copyWith(fontFamily: 'Raleway'),
-    button: base.button?.copyWith(fontFamily: 'Raleway'),
-    overline: base.overline?.copyWith(fontFamily: 'Raleway'),
+    titleLarge: base.titleLarge?.copyWith(fontFamily: 'Raleway'),
+    headlineSmall: base.headlineSmall?.copyWith(fontFamily: 'Raleway'),
+    headlineMedium: base.headlineMedium?.copyWith(fontFamily: 'Raleway'),
+    displaySmall: base.displaySmall?.copyWith(fontFamily: 'Raleway'),
+    displayMedium: base.displayMedium?.copyWith(fontFamily: 'Raleway'),
+    displayLarge: base.displayLarge?.copyWith(fontFamily: 'Raleway'),
+    titleSmall: base.titleSmall?.copyWith(fontFamily: 'Raleway'),
+    titleMedium: base.titleMedium?.copyWith(fontFamily: 'Raleway'),
+    bodyMedium: base.bodyMedium?.copyWith(fontFamily: 'Raleway'),
+    bodyLarge: base.bodyLarge?.copyWith(fontFamily: 'Raleway'),
+    bodySmall: base.bodySmall?.copyWith(fontFamily: 'Raleway'),
+    labelLarge: base.labelLarge?.copyWith(fontFamily: 'Raleway'),
+    labelSmall: base.labelSmall?.copyWith(fontFamily: 'Raleway'),
   );
 }
 

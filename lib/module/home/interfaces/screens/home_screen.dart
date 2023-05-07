@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:untitled1/screens/home/custom_home_screen.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
 import '/infrastructures/service/cubit/web3_cubit.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:postgres/postgres.dart'; // postgres SQL
 import '/configs/themes.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:untitled1/NewCartScreens/Product.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -29,7 +30,12 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   String accountAddress = '';
   String networkName = '';
+  late String contractAddress = '';
+  String amountInput = '';
+  late BigInt balance = BigInt.zero;
+  var product;
   TextEditingController greetingTextController = TextEditingController();
+  bool showCreateContractButton = false;
   
   ButtonStyle buttonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all(0),
@@ -42,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
 // Database connection object
-var connection = PostgreSQLConnection(
+PostgreSQLConnection connection = PostgreSQLConnection(
   '10.0.2.2', 5432, 'GeekchainDB', username: 'postgres', password: '1234');
 
  void connectDB() async{
@@ -53,9 +59,12 @@ var connection = PostgreSQLConnection(
     await connection.open();
     print('Connection opened successfully!');
   }
-  saveWalletAddress(1);
+
+  product = Product.empty();
+  product.setConnection(connection);
+  product.getProducts();
  }
- dynamic sellerAddressQuery(int row) async
+ dynamic sellerAddressHistoryQuery(int row) async
  {
   List<Map<String, Map<String, dynamic>>> result = await connection
     .mappedResultsQuery('SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
@@ -65,13 +74,13 @@ var connection = PostgreSQLConnection(
 
 
   if (result.length == 1) {
-     for (var element in result) {
+     for (Map<String, Map<String, dynamic>> element in result) {
       print(result);         
      }
    }
    return result;
  }
-void saveWalletAddress(int id) async
+ void saveWalletAddress(int id) async
 {
     List<Map<String, Map<String, dynamic>>> result = await connection
     .mappedResultsQuery('UPDATE public.customer SET walletaddress = @aAddress WHERE id = @aID',
@@ -79,6 +88,7 @@ void saveWalletAddress(int id) async
        'aAddress': accountAddress,
        'aID': id,
        });
+         print("Successfully saved address $accountAddress to customer ${id.toString()}");
 }
   /*void updateGreeting() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
@@ -88,37 +98,65 @@ void saveWalletAddress(int id) async
   }*/
 
   // BUYER FUNCTIONS
-  void createBuyerContract() {
-    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
+  void checkButtonStatus() async
+  {
+    EthereumAddress responseAddress = await context.read<Web3Cubit>().getBuyerContract();
 
+    if (responseAddress == EthereumAddress.fromHex('0x0000000000000000000000000000000000000000')) {
+      setState(() {
+        showCreateContractButton = true;
+        contractAddress = responseAddress.hex;
+      });
+      print("no contract address");
+    }else {
+      setState(() {
+        showCreateContractButton = false;
+        contractAddress = responseAddress.hex;
+      });
+      print("contract address exists" + contractAddress);
+    }
+
+  }
+  void createBuyerContract() {
+    
+    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
     context.read<Web3Cubit>().createBuyerContract();
+
+  } 
+   void getBuyerContract() async{
+     EthereumAddress e = await context.read<Web3Cubit>().getBuyerContract();
+     contractAddress = e.hex;
   }
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
-    context.read<Web3Cubit>().payShopping();
+    //product.addToCart(product.productList[0]);
+    //product.printCart();
+    product.buyProducts();
+    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices);
   }
   void requestReturn(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
     
-    context.read<Web3Cubit>().requestReturn(sellerAddressQuery(row), row);
+    context.read<Web3Cubit>().requestReturn(sellerAddressHistoryQuery(row), row);
   }
-  void getBuyerContract() {
-    context.read<Web3Cubit>().getBuyerContract();
-  }
-  void getBuyerContractBalance() {
-    context.read<Web3Cubit>().getBuyerContractBalance();
+
+  void getBuyerContractBalance() async{
+    BigInt getBalance = await context.read<Web3Cubit>().getBuyerContractBalance();
+          setState(() {
+            balance = getBalance;
+      });
   }
   void scanTransaction() {
     // DB conn
     context.read<Web3Cubit>().scanTransaction(0);
   }
-  void loadToBuyerContract()
+  void loadToBuyerContract(int input)
   {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // get input for amount
-    var amount = EtherAmount.inWei(BigInt.from(100));
+    EtherAmount amount = EtherAmount.inWei(BigInt.from(input));
     context.read<Web3Cubit>().loadToBuyerContract(amount);
   }
   // SELLER FUNCTIONS
@@ -154,6 +192,12 @@ void saveWalletAddress(int id) async
             session: widget.session,
           ),
     );
+    connectDB();
+    //saveWalletAddress(1); /** id alınacak */
+      Future.delayed(Duration(seconds: 1), () {
+    checkButtonStatus();
+    getBuyerContractBalance();
+  });
   }
 
   @override
@@ -248,7 +292,7 @@ void saveWalletAddress(int id) async
                           children: <Widget>[
                             Text(
                               'Account Address: ',
-                              style: theme.textTheme.subtitle2,
+                              style: theme.textTheme.titleSmall,
                             ),
                             Expanded(
                               flex: 1,
@@ -257,7 +301,7 @@ void saveWalletAddress(int id) async
                                 child: Text(
                                   accountAddress,
                                   overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.subtitle2,
+                                  style: theme.textTheme.titleSmall,
                                 ),
                               ),
                             ),
@@ -277,11 +321,11 @@ void saveWalletAddress(int id) async
                           children: <Widget>[
                             Text(
                               'Chain: ',
-                              style: theme.textTheme.subtitle2,
+                              style: theme.textTheme.titleSmall,
                             ),
                             Text(
                               networkName,
-                              style: theme.textTheme.subtitle2,
+                              style: theme.textTheme.titleSmall,
                             ),
                           ],
                         ),
@@ -291,71 +335,6 @@ void saveWalletAddress(int id) async
                 ),
                 Column(
                   children: <Widget>[
-                    Container(
-                      padding: EdgeInsets.symmetric(
-                        horizontal: width * 0.07,
-                        vertical: height * 0.03,
-                      ),
-                      margin: EdgeInsets.only(
-                        left: width * 0.03,
-                        right: width * 0.03,
-                        bottom: height * 0.03,
-                      ),
-                      decoration: BoxDecoration(
-                        gradient: const LinearGradient(colors: flirtGradient),
-                        borderRadius: const BorderRadius.vertical(
-                          bottom: Radius.circular(10),
-                          top: Radius.circular(10),
-                        ),
-                        boxShadow: <BoxShadow>[
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: const Offset(
-                                0, 13), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: <Widget>[
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.white.withAlpha(60),
-                              borderRadius: BorderRadius.circular(30),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 20,
-                            ),
-                            width: width,
-                            child: BlocBuilder<Web3Cubit, Web3State>(
-                              buildWhen:
-                                  (Web3State previous, Web3State current) =>
-                                      current is FetchGreetingSuccess ||
-                                      current is TransactionLoading,
-                              builder: (BuildContext context, Web3State state) {
-                                if (state is FetchGreetingSuccess) {
-                                  return Text(
-                                    '"${state.message}"',
-                                    style: theme.textTheme.headline6?.copyWith(
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.w400,
-                                      fontStyle: FontStyle.italic,
-                                    ),
-                                  );
-                                }
-                                return LinearProgressIndicator(
-                                  backgroundColor: Colors.transparent,
-                                  color: Colors.white.withOpacity(0.5),
-                                );
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                     Container(
                       padding: EdgeInsets.symmetric(
                         horizontal: width * 0.07,
@@ -382,19 +361,6 @@ void saveWalletAddress(int id) async
                       ),
                       child: Column(
                         children: <Widget>[
-                          TextField(
-                            controller: greetingTextController,
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(10),
-                                borderSide:
-                                    const BorderSide(color: Colors.white),
-                              ),
-                              hintText: 'What\'s in your head?',
-                              fillColor: Colors.white.withAlpha(60),
-                              filled: true,
-                            ),
-                          ),
                           SizedBox(
                             width: width,
                             child: BlocBuilder<Web3Cubit, Web3State>(
@@ -418,12 +384,117 @@ void saveWalletAddress(int id) async
                                     label: const Text(''),
                                   );
                                 }
-                                return ElevatedButton.icon(
-                                  onPressed: connectDB,
-                                  icon: const Icon(Icons.edit),
-                                  label: const Text('Get balance'),
-                                  style: buttonStyle,
-                                );
+                                  return Column(
+                                  children: [
+                                    const Text(
+                                      "Connected to MetaMask successfully!",
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    SizedBox(height: 10.0),
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const CustomHomeScreen()),
+                                          );
+                                        },
+                                        style: buttonStyle,
+                                        child: const Text("Back To App"),
+                                      ),
+                                      const SizedBox(height: 16),
+                                  showCreateContractButton
+                                      ? const Text(
+                                          "Create a contract to start shopping!",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ) :  const Text(
+                                          "Your contract address: ",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ), 
+                                          ), 
+                                     const SizedBox(height: 16),
+                                  showCreateContractButton
+                                      ? ElevatedButton(
+                                          onPressed: () {
+                                            //createBuyerContract();
+                                            //createSellerContract();
+                                            print("contract created");
+                                            getBuyerContract();
+                                              setState(() {
+                                                showCreateContractButton = false;
+                                              });
+                                          },
+                                          style: buttonStyle,
+                                          child: const Text("Create My Contract Now"),
+                                        )
+                                      :  Text(
+                                          contractAddress,
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      : TextField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            amountInput = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter an amount (in wei)',
+                                        ),
+                                      ),
+                                        const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      : ElevatedButton(
+                                          onPressed: () {
+                                        try {
+                                          int inputValue = int.parse(amountInput);
+                                          loadToBuyerContract(inputValue);
+                                          print("Loaded: " + amountInput);
+                                          getBuyerContractBalance();
+                                        } catch (e) {
+                                          print(e);
+                                          // Display an error message to the user
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Error: Invalid input.'),
+                                            ),
+                                          );
+                                        }
+                                      },
+                                          style: buttonStyle,
+                                          child: const Text("Load To My Contract"),
+                                        ),
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      :  Text(
+                                          "Balance: " + balance.toString(),
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ), 
+                                          
+                                      ),                                        
+                                    ],
+                                  );
                               },
                             ),
                           ),
@@ -460,7 +531,7 @@ void saveWalletAddress(int id) async
                             Icons.power_settings_new,
                           ),
                           label: Text('Disconnect',
-                              style: theme.textTheme.subtitle1),
+                              style: theme.textTheme.titleMedium),
                           style: ButtonStyle(
                             elevation: MaterialStateProperty.all(0),
                             backgroundColor: MaterialStateProperty.all(

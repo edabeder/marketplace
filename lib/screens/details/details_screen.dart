@@ -5,11 +5,11 @@ import 'components/body.dart';
 import 'components/custom_app_bar.dart';
 
 class DetailsScreen extends StatefulWidget {
-  static String routeName = "/details";
-
-  final Product product;
 
   const DetailsScreen({Key? key, required this.product}) : super(key: key);
+  static String routeName = '/details';
+
+  final Product product;
 
   @override
   _DetailsScreenState createState() => _DetailsScreenState();
@@ -27,7 +27,7 @@ class _DetailsScreenState extends State<DetailsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFFF5F6F9),
+      backgroundColor: const Color(0xFFF5F6F9),
       appBar: PreferredSize(
         preferredSize: Size.fromHeight(AppBar().preferredSize.height),
         child: CustomAppBar(
