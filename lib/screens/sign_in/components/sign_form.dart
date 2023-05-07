@@ -7,7 +7,7 @@ import '/components/form_error.dart';
 import '/helper/keyboard.dart';
 import '/screens/forgot_password/forgot_password_screen.dart';
 import '/screens/login_success/login_success_screen.dart';
-
+import '/screens/seller/seller_screen.dart';
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
@@ -47,6 +47,17 @@ class _SignFormState extends State<SignForm> {
       });
   }
 
+  Future<bool> isUserSeller(String email) async {
+    final url = 'http://10.0.2.2:3000/api/isUserSeller/:email';
+    final response = await Dio().get(url.replaceAll(':email', email));
+    if (response.statusCode == 200) {
+      final data = response.data;
+      return data['isSeller'];
+    } else {
+      throw Exception('Failed to check if user is a seller');
+    }
+  }
+
   Future<void> loginUser(String email, String password) async {
     if (_formKey.currentState!.validate()) {
       final url = 'http://10.0.2.2:3000/api/login';
@@ -55,18 +66,27 @@ class _SignFormState extends State<SignForm> {
         'password': password,
       });
       if (response.statusCode == 200) {
-        // Kullanıcı başarıyla eklendi
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Login succesful'),
           ),
         );
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HomeScreen(),
-          ),
-        );
+        final isSeller = await isUserSeller(email);
+        if (isSeller) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => SellerScreen(),
+            ),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeScreen(),
+            ),
+          );
+        }
       }
     }
   }

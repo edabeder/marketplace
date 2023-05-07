@@ -40,6 +40,7 @@ class AddUserScreen extends StatefulWidget {
 
 class _AddUserScreenState extends State<AddUserScreen> {
   String dropdownValue = 'Buyer'; // initial dropdown value
+  String? userType;
   bool isRegistered = false;
   final _formKey = GlobalKey<FormState>();
   final _fnameController = TextEditingController();
@@ -49,6 +50,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
   final _passwordController2 = TextEditingController();
   final _phoneController = TextEditingController();
   final _birthdayController = TextEditingController();
+  final _sellerController = TextEditingController();
+  final _customerController = TextEditingController();
 
   @override
   void dispose() {
@@ -59,6 +62,8 @@ class _AddUserScreenState extends State<AddUserScreen> {
     _passwordController2.dispose();
     _phoneController.dispose();
     _birthdayController.dispose();
+    _sellerController.dispose();
+    _customerController.dispose();
     super.dispose();
   }
 
@@ -87,13 +92,14 @@ class _AddUserScreenState extends State<AddUserScreen> {
     if (_formKey.currentState!.validate()) {
       final url = 'http://10.0.2.2:3000/api/register';
       final response = await Dio().post(url, data: {
-        'fName': _fnameController.text,
+        'fname': _fnameController.text,
         'lname': _lnameController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
         'password2': _passwordController2.text,
-        'phone': _phoneController.text,
-        'birthday': _birthdayController.text,
+        'phonenumber': _phoneController.text,
+        'dateofbirth': _birthdayController.text,
+        'isseller': userType,
       });
 
       print("normal deneme");
@@ -191,6 +197,40 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   ),
                   keyboardType: TextInputType.datetime,
                   validator: (value) => _validateFormField(value, 'Birthday'),
+                ),
+                SizedBox(height: 16),
+                Text('User type:'),
+                RadioListTile(
+                  title: Text('Customer'),
+                  value: 'Customer',
+                  groupValue: userType,
+                  onChanged: (value) {
+                    setState(() {
+                      userType = value.toString();
+                    });
+                  },
+                ),
+                RadioListTile(
+                  title: Text('Seller'),
+                  value: 'Seller',
+                  groupValue: userType,
+                  onChanged: (value) {
+                    setState(() {
+                      userType = value.toString();
+                    });
+                  },
+                ),
+                SizedBox(height: 16),
+                DefaultButton(
+                  text: 'Register',
+                  press: () {
+                    // Use the selected user type to navigate to the appropriate screen.
+                    if (userType == 'Customer') {
+                      // Navigate to the customer screen.
+                    } else if (userType == 'Seller') {
+                      // Navigate to the seller screen.
+                    }
+                  },
                 ),
                 SizedBox(
                   height: 16.0,

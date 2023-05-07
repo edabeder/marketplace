@@ -39,24 +39,38 @@ app.post('/api/login', async (req, res) => {
   let { email, password } = req.body;
 
   try {
-    const user = await pool.query(
-      `SELECT * FROM users
+    const customer = await pool.query(
+      `SELECT * FROM customer
       WHERE email = $1`,
       [email]
     );
 
-    if (user.rows.length === 0) {
+    const seller = await pool.query(
+      `SELECT * FROM seller
+      WHERE email = $1`,
+      [email]
+    );
+
+    let user = null;
+
+    if (customer.rows.length > 0) {
+      user = customer.rows[0];
+    } else if (seller.rows.length > 0) {
+      user = seller.rows[0];
+    }
+
+    if (!user) {
       return res.status(401).send({ message: "Invalid email or password" });
     }
 
-    const isMatch = await bcrypt.compare(password, user.rows[0].password);
+    const isMatch = await bcrypt.compare(password, user.password);
 
     if (!isMatch) {
       return res.status(401).send({ message: "Invalid email or password" });
     }
 
-    // Kullanıcının kimlik doğrulaması başarılı oldu, bir oturum oluşturabiliriz
-    req.session.user = user.rows[0].id;
+    // Kullanıcının kimlik doğrulaması başarılı oldu, bir oturum oluşturabilir
+    req.session.user = user.id;
 
     res.status(200).send({ message: "Login successful" });
   } catch (err) {
@@ -64,7 +78,6 @@ app.post('/api/login', async (req, res) => {
     res.status(500).send({ message: "Server error" });
   }
 });
-
 
 app.post('/api/logout', (req, res) => {
   // Kullanıcının oturumunu sonlandırın
@@ -78,22 +91,43 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
+app.get('/api/isUserSeller/:email', async (req, res) => {
+  const { email } = req.params;
+  try {
+    const result = await pool.query(
+      `SELECT * FROM seller WHERE email = $1`,
+      [email]
+    );
+    if (result.rows.length === 0) {
+      res.status(200).send({ isSeller: false });
+    } else {
+      res.status(200).send({ isSeller: true });
+    }
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({ message: "Server error" });
+  }
+});
+
+
+
 app.post('/api/register', async (req, res) => {
-  let {fName, lname, email, password, password2, phone, birthday} = req.body;
+  let {fname, lname, email, password, password2, phonenumber, dateofbirth, isseller} = req.body;
 
   let errors = [];
 
   console.log({
-    fName,
+    fname,
     lname,
     email,
     password,
     password2,
-    phone,
-    birthday
+    phonenumber,
+    dateofbirth,
+    isseller
   });
 
-  if (!fName || !lname || !email || !password || !password2) {
+  if (!fname || !lname || !email || !password || !password2) {
     errors.push({ message: "Please enter all fields" });
   }
 
@@ -113,7 +147,7 @@ app.post('/api/register', async (req, res) => {
       console.log(hashedPassword);
 
       const user = await pool.query(
-        `SELECT * FROM users
+        `SELECT * FROM customer
         WHERE email = $1`,
         [email]
       );
@@ -123,15 +157,25 @@ app.post('/api/register', async (req, res) => {
       if (user.rows.length > 0) {
         res.status(400).json({ message: "Email already registered" });
       } else {
-        const newUser = await pool.query(
-          `INSERT INTO users (fName, lName, email, password, phoneNumber, dateOfBirth)
-          VALUES ($1, $2, $3, $4,$5,$6)
-          RETURNING id, password`,
-          [fName, lname, email, hashedPassword, phone, birthday]
-        );
-
-        console.log(newUser.rows);
-        res.status(201).json({ id: newUser.rows[0].id });
+        if (isseller === 'Seller') {
+          const newSeller = await pool.query(
+            `INSERT INTO seller (fname, lname, email, password, phonenumber, dateofbirth)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id, password`,
+            [fname, lname, email, hashedPassword, phonenumber, dateofbirth]
+          );
+          console.log(newSeller.rows);
+          res.status(201).json({ id: newSeller.rows[0].id });
+        } else {
+          const newCustomer = await pool.query(
+            `INSERT INTO customer (fname, lname, email, password, phonenumber, dateofbirth)
+            VALUES ($1, $2, $3, $4, $5, $6)
+            RETURNING id, password`,
+            [fname, lname, email, hashedPassword, phonenumber, dateofbirth]
+          );
+          console.log(newCustomer.rows);
+          res.status(201).json({ id: newCustomer.rows[0].id });
+        }
       }
     } catch (err) {
       console.error(err.message);
@@ -235,8 +279,20 @@ app.get('/api/products/:id', async (req, res) => {
   }
 });
 
-
-
+// Arama işlemini yapacak endpoint
+app.get('/api/products/search/:query', async (req, res) => {
+  try {
+    const searchQuery = req.params.query;
+    const searchResults = await pool.query(
+      'SELECT * FROM product WHERE brand LIKE $1 OR "pName" LIKE $1',
+      [`%${searchQuery}%`]
+    );
+    res.json(searchResults.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({ message: 'Server error' });
+  }
+});
 
 app.listen(3000, () => {
 console.log('Server is listening on port 3000');
