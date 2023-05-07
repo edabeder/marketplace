@@ -33,6 +33,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late String contractAddress = '';
   String amountInput = '';
   late BigInt balance = BigInt.zero;
+  var product;
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
   
@@ -59,10 +60,11 @@ PostgreSQLConnection connection = PostgreSQLConnection(
     print('Connection opened successfully!');
   }
 
-  var p = Product.empty();
-  p.getProducts(connection);
+  product = Product.empty();
+  product.setConnection(connection);
+  product.getProducts();
  }
- dynamic sellerAddressQuery(int row) async
+ dynamic sellerAddressHistoryQuery(int row) async
  {
   List<Map<String, Map<String, dynamic>>> result = await connection
     .mappedResultsQuery('SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
@@ -127,14 +129,16 @@ PostgreSQLConnection connection = PostgreSQLConnection(
   }
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
-    var product = Product.empty();
+
+    //product.addToCart(product.productList[0]);
+    //product.printCart();
     product.buyProducts();
     context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices);
   }
   void requestReturn(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
     
-    context.read<Web3Cubit>().requestReturn(sellerAddressQuery(row), row);
+    context.read<Web3Cubit>().requestReturn(sellerAddressHistoryQuery(row), row);
   }
 
   void getBuyerContractBalance() async{
