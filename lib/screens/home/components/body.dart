@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:untitled1/HomePage.dart';
+import 'package:untitled1/screens/home/homeComponent.dart';
 
 import '../../../size_config.dart';
 import 'categories.dart';
@@ -25,6 +27,9 @@ class Body extends StatelessWidget {
             SizedBox(height: getProportionateScreenWidth(30)),
             const PopularProducts(),
             SizedBox(height: getProportionateScreenWidth(30)),
+            //HomeProducts(),
+            //SizedBox(height: getProportionateScreenWidth(30)),
+
           ],
         ),
       ),

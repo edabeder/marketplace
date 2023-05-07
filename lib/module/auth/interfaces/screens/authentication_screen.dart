@@ -15,7 +15,6 @@ class AuthenticationScreen extends StatefulWidget {
 }
 
 class _AuthenticationScreenState extends State<AuthenticationScreen> {
-  
   Future<void> launchApp() async {
     final bool isInstalled = await LaunchApp.isAppInstalled(
       androidPackageName: metaMaskPackageName,
@@ -35,7 +34,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
       iosUrlScheme: metamaskWalletScheme,
       appStoreLink: metamaskAppsStoreLink,
     );
-
   }
 
   @override
@@ -91,7 +89,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                 Padding(
                   padding: EdgeInsets.only(bottom: height * 0.4),
                   child: Text(
-                    'Sophon',
+                    'Ethereum Wallet',
                     style: theme.textTheme.displaySmall,
                   ),
                 ),
@@ -139,9 +137,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                               ),
                             ),
                           ),
-                          ElevatedButton(onPressed: () {
-                            Navigator.pop(context);
-                          }, child: Text("Go Back To Home"))
+                          ElevatedButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: Text("aa"))
                         ],
                       ),
                     ],

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 const Color kPink = Color(0xFFfe6796);
 
 ThemeData buildDefaultTheme(BuildContext context) {
-  final ThemeData base = ThemeData.dark();
+  final ThemeData base = ThemeData.light();
 
   return base.copyWith(
     textTheme: _buildDefaultTextTheme(base.textTheme),
