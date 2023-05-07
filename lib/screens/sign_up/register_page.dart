@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
-import 'package:untitled1/screens/home/custom_home_screen.dart';
+import '../home/custom_home_screen.dart';
+import '../../../components/default_button.dart';
+import 'package:flutter/material.dart';
 import '../seller/seller_screen.dart';
 import '../sign_in/sign_in_screen.dart';
 import '../splash/splash_screen.dart';
+import '../sign_in/components/sign_form.dart';
+import '/components/custom_surfix_icon.dart';
+import '/components/form_error.dart';
+import '/helper/keyboard.dart';
+import '/screens/login_success/login_success_screen.dart';
 
+import '../../../components/default_button.dart';
+import '../../../constants.dart';
+import '../../../size_config.dart';
 import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatelessWidget {
-  const RegisterPage({super.key});
-
-  static String routeName = '/register_page';
+  static String routeName = "/register_page";
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       title: 'Add User',
       home: AddUserScreen(),
     );
@@ -21,8 +34,6 @@ class RegisterPage extends StatelessWidget {
 }
 
 class AddUserScreen extends StatefulWidget {
-  const AddUserScreen({super.key});
-
   @override
   _AddUserScreenState createState() => _AddUserScreenState();
 }
@@ -31,7 +42,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
   String dropdownValue = 'Buyer'; // initial dropdown value
   String? userType;
   bool isRegistered = false;
-<<<<<<< HEAD
   final _formKey = GlobalKey<FormState>();
   final _fnameController = TextEditingController();
   final _lnameController = TextEditingController();
@@ -42,16 +52,6 @@ class _AddUserScreenState extends State<AddUserScreen> {
   final _birthdayController = TextEditingController();
   final _sellerController = TextEditingController();
   final _customerController = TextEditingController();
-=======
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final TextEditingController _fnameController = TextEditingController();
-  final TextEditingController _lnameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _passwordController2 = TextEditingController();
-  final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _birthdayController = TextEditingController();
->>>>>>> b0653e36bdbdac788c099518c252e9dbc8dfcb27
 
   @override
   void dispose() {
@@ -78,29 +78,21 @@ class _AddUserScreenState extends State<AddUserScreen> {
     if (dropdownValue == 'Buyer') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => const CustomHomeScreen()),
+        MaterialPageRoute(builder: (context) => CustomHomeScreen()),
       );
     } else if (dropdownValue == 'Seller') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-            builder: (BuildContext context) => const SplashScreen()),
+        MaterialPageRoute(builder: (context) => SplashScreen()),
       );
     }
   }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-<<<<<<< HEAD
       final url = 'http://10.0.2.2:3000/api/register';
       final response = await Dio().post(url, data: {
         'fname': _fnameController.text,
-=======
-      const String url = 'http://10.0.2.2:3000/api/register';
-      final Response response = await Dio().post(url, data: {
-        'fName': _fnameController.text,
->>>>>>> b0653e36bdbdac788c099518c252e9dbc8dfcb27
         'lname': _lnameController.text,
         'email': _emailController.text,
         'password': _passwordController.text,
@@ -110,22 +102,21 @@ class _AddUserScreenState extends State<AddUserScreen> {
         'isseller': userType,
       });
 
-      print('normal deneme');
-      if (response.statusCode == 201) {
-        print('is denemesi');
+      print("normal deneme");
+      if (await response.statusCode == 201) {
+        print("is denemesi");
         // Kullanıcı başarıyla eklendi
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text('User added to database'),
           ),
         );
 
-        print('if denemesi 2');
+        print("if denemesi 2");
 
         Navigator.push(
           context,
-          MaterialPageRoute(
-              builder: (BuildContext context) => const SignInScreen()),
+          MaterialPageRoute(builder: (context) => SignInScreen()),
         );
 
         // return true if registration was successful
@@ -137,7 +128,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add User'),
+        title: Text('Add User'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -149,45 +140,41 @@ class _AddUserScreenState extends State<AddUserScreen> {
               children: [
                 TextFormField(
                   controller: _fnameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'First Name',
                   ),
-                  validator: (String? value) =>
-                      _validateFormField(value, 'First Name'),
+                  validator: (value) => _validateFormField(value, 'First Name'),
                 ),
                 TextFormField(
                   controller: _lnameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Last Name',
                   ),
-                  validator: (String? value) =>
-                      _validateFormField(value, 'Last Name'),
+                  validator: (value) => _validateFormField(value, 'Last Name'),
                 ),
                 TextFormField(
                   controller: _emailController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Email',
                   ),
                   keyboardType: TextInputType.emailAddress,
-                  validator: (String? value) =>
-                      _validateFormField(value, 'Email'),
+                  validator: (value) => _validateFormField(value, 'Email'),
                 ),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Password',
                   ),
                   obscureText: true,
-                  validator: (String? value) =>
-                      _validateFormField(value, 'Password'),
+                  validator: (value) => _validateFormField(value, 'Password'),
                 ),
                 TextFormField(
                   controller: _passwordController2,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Confirm Password',
                   ),
                   obscureText: true,
-                  validator: (String? value) {
+                  validator: (value) {
                     if (_passwordController.text != value) {
                       return 'Passwords do not match';
                     }
@@ -196,23 +183,21 @@ class _AddUserScreenState extends State<AddUserScreen> {
                 ),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Phone Number',
                   ),
                   keyboardType: TextInputType.phone,
-                  validator: (String? value) =>
+                  validator: (value) =>
                       _validateFormField(value, 'Phone Number'),
                 ),
                 TextFormField(
                   controller: _birthdayController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Birthday (MM/DD/YYYY)',
                   ),
                   keyboardType: TextInputType.datetime,
-                  validator: (String? value) =>
-                      _validateFormField(value, 'Birthday'),
+                  validator: (value) => _validateFormField(value, 'Birthday'),
                 ),
-<<<<<<< HEAD
                 SizedBox(height: 16),
                 Text('User type:'),
                 RadioListTile(
@@ -235,46 +220,28 @@ class _AddUserScreenState extends State<AddUserScreen> {
                     });
                   },
                 ),
-                SizedBox(height: 16),
-                DefaultButton(
-                  text: 'Register',
-                  press: () {
-                    // Use the selected user type to navigate to the appropriate screen.
-                    if (userType == 'Customer') {
-                      // Navigate to the customer screen.
-                    } else if (userType == 'Seller') {
-                      // Navigate to the seller screen.
-                    }
-                  },
-                ),
                 SizedBox(
-=======
-                const SizedBox(
->>>>>>> b0653e36bdbdac788c099518c252e9dbc8dfcb27
                   height: 16.0,
                 ),
                 ElevatedButton(
                   onPressed: () {
                     _submitForm();
                   },
-                  child: const Text('Add User Deneme'),
+                  child: Text('Add User Deneme'),
                 ),
-                const SizedBox(height: 20),
+                SizedBox(height: 20),
                 ElevatedButton(
-                  child: const Text('Home screen'),
+                  child: Text('Home screen'),
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) =>
-                            const CustomHomeScreen()),
+                    MaterialPageRoute(builder: (context) => CustomHomeScreen()),
                   ),
                 ),
                 ElevatedButton(
-                  child: const Text('Seller Screen'),
+                  child: Text('Seller Screen'),
                   onPressed: () => Navigator.push(
                     context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => SellerScreen()),
+                    MaterialPageRoute(builder: (context) => SellerScreen()),
                   ),
                 ),
               ],

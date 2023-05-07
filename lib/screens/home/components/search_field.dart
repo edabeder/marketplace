@@ -29,14 +29,10 @@ class SearchField extends StatelessWidget {
         borderRadius: BorderRadius.circular(15),
       ),
       child: TextField(
-<<<<<<< HEAD
         onChanged: (value) async {
           final results = await searchProducts(value);
           print(results);
         },
-=======
-        onChanged: (String value) => print(value),
->>>>>>> b0653e36bdbdac788c099518c252e9dbc8dfcb27
         decoration: InputDecoration(
             contentPadding: EdgeInsets.symmetric(
                 horizontal: getProportionateScreenWidth(20),
