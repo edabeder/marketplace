@@ -10,6 +10,7 @@ import 'package:postgres/postgres.dart'; // postgres SQL
 import '/configs/themes.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:untitled1/NewCartScreens/Product.dart';
+import 'package:untitled1/module/PostgresDBConnector.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -34,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String amountInput = '';
   late BigInt balance = BigInt.zero;
   var product;
+
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
   
@@ -63,6 +65,7 @@ PostgreSQLConnection connection = PostgreSQLConnection(
   product = Product.empty();
   product.setConnection(connection);
   product.getProducts();
+  product.printCart();
  }
  dynamic sellerAddressHistoryQuery(int row) async
  {

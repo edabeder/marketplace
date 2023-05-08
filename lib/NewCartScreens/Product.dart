@@ -63,11 +63,20 @@ void addToCart(Product p)
   cart.add(p);
   total += p.price;
 }
+// button to purchase the cart
 void buyProducts() async
 {
   for(Product p in cart)
    {
-    
+        List<Map<String, Map<String, dynamic>>> result = await connection
+    .mappedResultsQuery('INSERT INTO public.history (transactiondate, amount, productid, sellerid, customerid) values (@date, @amount, @pid, @sid, @cid)',
+         substitutionValues: {
+       'date': '2023-05-08',
+       'amount': p.productID,
+       'pid': p.productID,
+       'sid': p.sellerID,
+       'cid': p.productID,
+       });
     sellers.add(await getSellerAddress(p.sellerID));
     productNames.add(p.productName);
     prices.add(p.price);
@@ -76,7 +85,7 @@ void buyProducts() async
 }
 void printCart()
 {
-  for(Product p in cart)
+  for(Product p in productList)
    {
     print(p.brand + " " + p.category + " " + p.productID.toString()
       + " " + p.price.toString()  + " " + p.img + " " + p.sellerID.toString() + " " + p.productName);
