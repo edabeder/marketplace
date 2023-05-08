@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
 import 'package:web3dart/web3dart.dart';
+import 'package:untitled1/module/PostgresDBConnector.dart';
 
 class Product
 {
@@ -24,16 +25,18 @@ Product.empty();
   double price = 0;
   String img = '';
   double total = 0;
-  var connection;
+  late PostgreSQLConnection connection;
   List<Product> productList = [];
   List<Product> cart = [];
   List<dynamic> sellers = [];
   List<String> productNames = [];
   List<double> prices = [];
 
-void setConnection(PostgreSQLConnection conn)
+void setConnection() async
 {
-  connection = conn;
+  connection = await PostgresDBConnector().connection;
+  getProducts();
+
 }
 void getProducts() async
 {
@@ -56,7 +59,7 @@ void getProducts() async
     productList.add(myProduct);       
      }
    }
-   
+   printCart(productList);
 }
 void addToCart(Product p)
 {
@@ -83,9 +86,9 @@ void buyProducts() async
    }
    print("total: " + total.toString());
 }
-void printCart()
+void printCart(List<Product> list)
 {
-  for(Product p in productList)
+  for(Product p in list)
    {
     print(p.brand + " " + p.category + " " + p.productID.toString()
       + " " + p.price.toString()  + " " + p.img + " " + p.sellerID.toString() + " " + p.productName);

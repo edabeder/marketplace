@@ -6,16 +6,19 @@ class PostgresDBConnector {
 
   factory PostgresDBConnector() => _instance;
 
-  PostgresDBConnector._internal();
+  PostgresDBConnector._internal() {
+    _connect();
+  }
+
+  Future<void> _connect() async {
+    _connection = PostgreSQLConnection('10.0.2.2', 5432, 'GeekchainDB', username: 'postgres', password: '1234');
+    await _connection.open();
+  }
 
   Future<PostgreSQLConnection> get connection async {
-    if (_connection != null && !_connection.isClosed) {
-      return _connection;
+    if (_connection == null || _connection.isClosed) {
+      await _connect();
     }
-
-    _connection = PostgreSQLConnection('10.0.2.2', 5432, 'GeekchainDB', username: 'postgres', password: '1234');
-
-    await _connection.open();
 
     return _connection;
   }
@@ -26,7 +29,3 @@ class PostgresDBConnector {
     }
   }
 }
-/** final conn = await PostgresDBConnector().connection;
-final result = await conn.query('SELECT * FROM my_table');
-print(result);
- */

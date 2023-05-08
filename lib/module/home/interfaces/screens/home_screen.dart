@@ -35,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String amountInput = '';
   late BigInt balance = BigInt.zero;
   var product;
+  late PostgreSQLConnection connection;
 
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
@@ -50,22 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
 // Database connection object
-PostgreSQLConnection connection = PostgreSQLConnection(
-  '10.0.2.2', 5432, 'GeekchainDB', username: 'postgres', password: '1234');
 
  void connectDB() async{
-    try {
-    await connection.query('SELECT 1');
-    print('Connection is already open.');
-  } catch (_) {
-    await connection.open();
-    print('Connection opened successfully!');
-  }
 
-  product = Product.empty();
-  product.setConnection(connection);
-  product.getProducts();
-  product.printCart();
+ connection = await PostgresDBConnector().connection;
+  //product = Product.empty();
+  //product.setConnection();
  }
  dynamic sellerAddressHistoryQuery(int row) async
  {
