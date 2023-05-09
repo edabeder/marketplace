@@ -16,7 +16,7 @@ class ProductListScreen extends StatefulWidget {
 class _ProductListScreenState extends State<ProductListScreen> {
 
 
-  List<String> productName = ['Dualsense Wireless Controller' , 'Air Jordan 1 Low SE' , 'Iphone 14 Pro Max 128GB 6.7 Black' ,] ;
+  List<String> productName = ['Dualsense Wireless Controller' , 'Air Jordan 1 Low SE' , 'Iphone 14 Pro Max 128GB Black' ,] ;
   List<String> productUnit = ['KG' , 'Dozen' , 'KG' ] ;
   List<int> productPrice = [80, 70 , 100] ;
   List<String> productImage = [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:untitled1/HomePage.dart';
+import 'package:untitled1/screens/home/components/trialProduct.dart';
 import 'package:untitled1/screens/home/homeComponent.dart';
 
 import '../../../size_config.dart';
@@ -21,14 +22,13 @@ class Body extends StatelessWidget {
             SizedBox(height: getProportionateScreenHeight(20)),
             const HomeHeader(),
             SizedBox(height: getProportionateScreenWidth(10)),
-            const DiscountBanner(),
+            //const DiscountBanner(),
             const Categories(),
-            const SpecialOffers(),
+            //const SpecialOffers(),
             SizedBox(height: getProportionateScreenWidth(30)),
-            const PopularProducts(),
+            //const PopularProducts(),
+            HomeProducts(),
             SizedBox(height: getProportionateScreenWidth(30)),
-            //HomeProducts(),
-            //SizedBox(height: getProportionateScreenWidth(30)),
 
           ],
         ),

@@ -393,7 +393,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         onPressed: () {
                                           Navigator.push(
                                             context,
-                                            MaterialPageRoute(builder: (context) => const CustomHomeScreen()),
+                                            MaterialPageRoute(builder: (context) => CustomHomeScreen()),
                                           );
                                         },
                                         style: buttonStyle,

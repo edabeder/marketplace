@@ -7,6 +7,7 @@ import 'package:untitled1/module/auth/interfaces/screens/authentication_screen.d
 import 'package:untitled1/screens/sign_up/register_page.dart';
 import 'package:untitled1/screens/sign_up/sign_up_screen.dart';
 import '../../../NewCartScreens/NewCartProvider.dart';
+import '../../../NewCartScreens/new_cart_screen.dart';
 import '/screens/cart/cart_screen.dart';
 
 import '../../../size_config.dart';
@@ -53,17 +54,22 @@ class HomeHeader extends StatelessWidget {
             ),
             icon: const Icon(Icons.arrow_back_rounded),
           ),
-          Center(
-            child: badges.Badge(
-              badgeContent: Consumer<CartProvider>(
-                builder: (BuildContext context, CartProvider value , Widget? child){
-                  return Text(value.getCounter().toString(),style: const TextStyle(color: Colors.white));
-                },
+          InkWell(
+            onTap: (){
+              Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => const NewCartScreen()));
+            },
+            child: Center(
+              child: badges.Badge(
+                badgeContent: Consumer<CartProvider>(
+                  builder: (BuildContext context, CartProvider value , Widget? child){
+                    return Text(value.getCounter().toString(),style: const TextStyle(color: Colors.white));
+                  },
 
+                ),
+                animationDuration: const Duration(milliseconds: 300),
+                animationType: BadgeAnimationType.slide,
+                child: const Icon(Icons.shopping_bag_outlined),
               ),
-              animationDuration: const Duration(milliseconds: 300),
-              animationType: BadgeAnimationType.slide,
-              child: const Icon(Icons.shopping_bag_outlined),
             ),
           ),
         ],
