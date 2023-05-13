@@ -7,15 +7,15 @@ import '/NewCartScreens/NewCartModel.dart';
 
 class DBHelper {
 
-  static Database? _db ;
+static Database? _db;
 
   Future<Database?> get db async {
-    if(_db != null){
-      return _db!;
+    if (_db != null) {
+      return _db;
     }
 
     _db = await initDatabase();
-    return null;
+    return _db;
   }
 
   initDatabase()async{
@@ -27,15 +27,16 @@ class DBHelper {
 
   _onCreate (Database db , int version )async{
     await db
-        .execute('CREATE TABLE cart (id INTEGER PRIMARY KEY , productId VARCHAR UNIQUE,productName TEXT,initialPrice INTEGER, productPrice INTEGER , quantity INTEGER, unitTag TEXT , image TEXT )');
+        .execute('CREATE TABLE cart (id INTEGER PRIMARY KEY ,productName TEXT, initialPrice REAL, quantity INTEGER , image TEXT )');
   }
 
-  Future<Cart> insert(Cart cart)async{
-    print(cart.toMap());
-    Database? dbClient = await db ;
-    await dbClient!.insert('cart', cart.toMap());
-    return cart ;
-  }
+Future<Cart> insert(Cart cart) async {
+  Database? dbClient = await db;
+  int id = await dbClient!.insert('cart', cart.toMap());
+  cart.id = id;
+  return cart;
+}
+
 
   Future<List<Cart>> getCartList()async{
     Database? dbClient = await db ;
