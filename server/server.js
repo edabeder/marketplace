@@ -18,11 +18,11 @@ app.use(session({
 
 // PostgreSQL bağlantısı için konfigürasyon objesi
 const config = {
-user: 'postgres',
-host: 'localhost',
-database: 'GeekchainDB',
-password: '12345',
-port: 5432, // default Postgres port
+  user: 'postgres',
+  host: 'localhost',
+  database: 'GeekchainDB',
+  password: 'gizem',
+  port: 5433, // default Postgres port
 };
 
 // PostgreSQL veritabanına bağlan
@@ -32,6 +32,8 @@ const pool = new pg.Pool(config);
 pool.on('error', function (err) {
 console.error('idle client error', err.message, err.stack)
 });
+
+let globalUserId = null;
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -52,11 +54,16 @@ app.post('/api/login', async (req, res) => {
     );
 
     let user = null;
+    let customerId = null;
 
     if (customer.rows.length > 0) {
       user = customer.rows[0];
+      customerId = user.id;
     } else if (seller.rows.length > 0) {
       user = seller.rows[0];
+      // Eğer seller tablosunda da bir customerid sütunu varsa,
+      // o sütunu da customerId değişkenine atayabilirsiniz.
+      customerId = user.customerid;
     }
 
     if (!user) {
@@ -71,13 +78,16 @@ app.post('/api/login', async (req, res) => {
 
     // Kullanıcının kimlik doğrulaması başarılı oldu, bir oturum oluşturabilir
     req.session.user = user.id;
+    globalUserId = user.id;
 
-    res.status(200).send({ message: "Login successful" });
+    // customerId'ı yanıt olarak gönderebilirsiniz
+    res.status(200).send({ message: "Login successful", customerId: customerId });
   } catch (err) {
     console.error(err.message);
     res.status(500).send({ message: "Server error" });
   }
 });
+
 
 app.post('/api/logout', (req, res) => {
   // Kullanıcının oturumunu sonlandırın
@@ -109,6 +119,43 @@ app.get('/api/isUserSeller/:email', async (req, res) => {
   }
 });
 
+app.get('/api/customerIdByEmail', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    // E-posta adresine göre müşteri kimliğini veritabanından alın
+    const customerId = await pool.query(
+      `SELECT customerid FROM customer
+      WHERE email = $1`,
+      [email]
+    );
+
+    res.status(200).send({ customerId });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({ message: "Server error" });
+  }
+});
+
+
+app.get('/api/history/:customerId', async (req, res) => {
+  const { customerId } = req.params;
+
+  try {
+    const history = await pool.query(
+      `SELECT * FROM history
+      WHERE customerid = $1`,
+      [customerId]
+    );
+
+    console.log(history.rows); // Konsol çıktısı
+
+    res.status(200).send(history.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send({ message: "Server error" });
+  }
+});
 
 
 app.post('/api/register', async (req, res) => {

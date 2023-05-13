@@ -5,7 +5,7 @@ import '/enums.dart';
 import 'components/body.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
+  const ProfileScreen({Key? key}) : super(key: key);
 
   static String routeName = '/profile';
   @override
@@ -15,7 +15,8 @@ class ProfileScreen extends StatelessWidget {
         title: const Text('Profile'),
       ),
       body: const Body(),
-      bottomNavigationBar: const CustomBottomNavBar(selectedMenu: MenuState.profile),
+      bottomNavigationBar:
+          const CustomBottomNavBar(selectedMenu: MenuState.profile),
     );
   }
 }
