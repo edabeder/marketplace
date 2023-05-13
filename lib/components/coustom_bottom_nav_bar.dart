@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:untitled1/NewCartScreens/new_product_list.dart';
 import '/screens/home/custom_home_screen.dart';
 import '/screens/profile/profile_screen.dart';
 
@@ -56,10 +55,7 @@ class CustomBottomNavBar extends StatelessWidget {
               IconButton(
                 icon: SvgPicture.asset('assets/icons/Chat bubble Icon.svg'),
                 onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => const ProductListScreen()));
+                  
                 },
               ),
               IconButton(

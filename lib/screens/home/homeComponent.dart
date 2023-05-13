@@ -20,20 +20,16 @@ import '/NewCartScreens/NewCartProvider.dart';
 
 class HomeProducts extends StatefulWidget {
 
-
-
   @override
   State<HomeProducts> createState() => _HomeProductsState();
 }
 
 class _HomeProductsState extends State<HomeProducts> {
-  List<String> productName = ['Dualsense Wireless Controller' , 'Air Jordan 1 Low SE' , 'Iphone 14 Pro Max 128GB Black' ,] ;
-  List<String> productUnit = ['KG' , 'Dozen' , 'KG' ] ;
-  List<int> productPrice = [80, 70 , 100] ;
+  List<String> productName = [] ;
+  List<double> productPrice = [] ;
   List<String> productImage = [
     'https://gmedia.playstation.com/is/image/SIEPDC/dualsense-thumbnail-ps5-01-en-17jul20?' ,
     'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/34dec221-0f96-4c6c-b76e-40b42f679e26/air-jordan-1-low-se-ayakkab%C4%B1s%C4%B1-j6GSq5.png' ,
-    'https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcRg0S6oIC9gdRAXKhz-Wrjrz8F_z1DE3iTWzjc0xynSCOSS2Ox6s8wrGDdovESTCE5cwRCmStmExkjp79_sgFQSfiR9doGRbBgO7FHbYnCIgLh1bZVHdHAg&usqp=CAE' ,
   ] ;
 
   DBHelper? dbHelper = DBHelper();
@@ -43,9 +39,19 @@ class _HomeProductsState extends State<HomeProducts> {
 
   void connectDB() async{
 
-    connection = await PostgresDBConnector().connection;
+    //connection = await PostgresDBConnector().connection;
     product = Product.empty();
     product.setConnection();
+
+  Future.delayed(Duration(seconds: 1), () {
+  for(Product p in product.productList)
+   {
+    productName.add(p.productName);
+    productPrice.add(p.price);
+
+    //productImage.add(p.img);
+   }
+  });  
 
   }
 
@@ -53,6 +59,7 @@ class _HomeProductsState extends State<HomeProducts> {
   void initState() {
     super.initState();
     connectDB();
+
   }
 
 
@@ -103,37 +110,27 @@ class _HomeProductsState extends State<HomeProducts> {
                                       alignment: Alignment.centerRight,
                                       child: InkWell(
                                         onTap: (){
-                                          print(index);
+                                          
                                           print(index);
                                           print(productName[index].toString());
                                           print( productPrice[index].toString());
                                           print( productPrice[index]);
                                           print('1');
-                                          print(productUnit[index].toString());
                                           print(productImage[index].toString());
 
-                                          dbHelper!.insert(
+
+                                            dbHelper!.insert(
                                               Cart(
-                                                  id: index,
-                                                  productId: index.toString(),
                                                   productName: productName[index].toString(),
-                                                  initialPrice: productPrice[index],
-                                                  productPrice: productPrice[index],
+                                                  price: productPrice[index],
                                                   quantity: 1,
-                                                  unitTag: productUnit[index].toString(),
                                                   image: productImage[index].toString())
                                           ).then((Cart value){
 
                                             cart.addTotalPrice(double.parse(productPrice[index].toString()));
                                             cart.addCounter();
-
+                                          
                                             const SnackBar snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
-
-                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-                                          }).onError((Object? error, StackTrace stackTrace){
-                                            print('error$error');
-                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                           });
