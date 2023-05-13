@@ -57,6 +57,7 @@ void setConnection() async
 {
   connection = await PostgresDBConnector().connection;
   setCustomerStatus("");
+  isSeller = true;
 }
 void setCustomerStatus(String email) async
 {
@@ -71,7 +72,7 @@ List<Map<String, Map<String, dynamic>>> result = await connection
   } else {
     isSeller = true;
   }
-  print(isSeller);
+
 }
 
  dynamic sellerAddressHistoryQuery(int row) async
@@ -456,7 +457,7 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                           ),
                                         ),
                                     const SizedBox(height: 16),
-                                    showCreateContractButton 
+                                    showCreateContractButton && !isSeller
                                       ? SizedBox(height: 1) 
                                       : TextField(
                                         onChanged: (value) {
@@ -473,7 +474,8 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                       ? SizedBox(height: 1) 
                                       : ElevatedButton(
                                           onPressed: () {
-                                        try {
+                                            if(!isSeller)
+                                            {                                        try {
                                           int inputValue = int.parse(amountInput);
                                           loadToBuyerContract(inputValue);
                                           print("Loaded: " + amountInput);
@@ -487,9 +489,13 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                             ),
                                           );
                                         }
+                                        }else{
+                                          sendTokensToSeller();
+                                        }
+
                                       },
                                           style: buttonStyle,
-                                          child: const Text("Load To My Contract"),
+                                          child: !isSeller? const Text("Load To My Contract") :const Text("Load To My Account"),
                                         ),
                                     const SizedBox(height: 16),
                                     showCreateContractButton 
