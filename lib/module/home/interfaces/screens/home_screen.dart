@@ -57,7 +57,7 @@ void setConnection() async
 {
   connection = await PostgresDBConnector().connection;
   setCustomerStatus("");
-  isSeller = true;
+
 }
 void setCustomerStatus(String email) async
 {
@@ -176,8 +176,9 @@ List<Map<String, Map<String, dynamic>>> result = await connection
 
     context.read<Web3Cubit>().createSellerContract();
   }
-    void getSellerContract() {
-    context.read<Web3Cubit>().getSellerContract();
+    void getSellerContract() async{
+         EthereumAddress e = await context.read<Web3Cubit>().getSellerContract();
+     contractAddress = e.hex;
   }
     void returnTokensToCustomer() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
@@ -207,7 +208,12 @@ List<Map<String, Map<String, dynamic>>> result = await connection
     //saveWalletAddress(1); /** id alınacak */
       Future.delayed(Duration(seconds: 1), () {
     checkButtonStatus();
-    getBuyerContractBalance();
+    if(!isSeller)
+    {
+          getBuyerContractBalance();
+    }
+
+      
   });
   }
 
@@ -437,10 +443,16 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                   showCreateContractButton
                                       ? ElevatedButton(
                                           onPressed: () {
-                                            //createBuyerContract();
-                                            //createSellerContract();
-                                            print("contract created");
-                                            getBuyerContract();
+                                            if(!isSeller)
+                                            {  
+                                              //createBuyerContract();
+                                              getBuyerContract();
+                                            }else{
+                                              //createSellerContract();
+                                              getSellerContract();
+                                            }
+                                            
+
                                               setState(() {
                                                 showCreateContractButton = false;
                                               });
@@ -457,7 +469,7 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                           ),
                                         ),
                                     const SizedBox(height: 16),
-                                    showCreateContractButton && !isSeller
+                                    showCreateContractButton || isSeller
                                       ? SizedBox(height: 1) 
                                       : TextField(
                                         onChanged: (value) {
@@ -475,22 +487,23 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                       : ElevatedButton(
                                           onPressed: () {
                                             if(!isSeller)
-                                            {                                        try {
-                                          int inputValue = int.parse(amountInput);
-                                          loadToBuyerContract(inputValue);
-                                          print("Loaded: " + amountInput);
-                                          getBuyerContractBalance();
-                                        } catch (e) {
-                                          print(e);
-                                          // Display an error message to the user
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: Text('Error: Invalid input.'),
-                                            ),
-                                          );
+                                            {                                      
+                                              try {
+                                              int inputValue = int.parse(amountInput);
+                                              loadToBuyerContract(inputValue);
+                                              print("Loaded: " + amountInput);
+                                              getBuyerContractBalance();
+                                            } catch (e) {
+                                              print(e);
+                                              // Display an error message to the user
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: Text('Error: Invalid input.'),
+                                                ),
+                                              );  
                                         }
                                         }else{
-                                          sendTokensToSeller();
+                                          //sendTokensToSeller();
                                         }
 
                                       },
