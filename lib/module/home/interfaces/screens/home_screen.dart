@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:untitled1/screens/home/custom_home_screen.dart';
+import 'package:untitled1/screens/sign_in/components/sign_form.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
 import '/infrastructures/service/cubit/web3_cubit.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -36,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late BigInt balance = BigInt.zero;
   var product;
   late PostgreSQLConnection connection;
+  bool isSeller = false;
 
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
@@ -51,13 +53,27 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
 // Database connection object
+void setConnection() async
+{
+  connection = await PostgresDBConnector().connection;
+  setCustomerStatus("");
+}
+void setCustomerStatus(String email) async
+{
+List<Map<String, Map<String, dynamic>>> result = await connection
+    .mappedResultsQuery('SELECT * FROM public.seller WHERE email = @aEmail',
+         substitutionValues: {
+       'aEmail': email,
+       });
 
- void connectDB() async{
+  if (result.length == 0) {
+    isSeller = false;
+  } else {
+    isSeller = true;
+  }
+  print(isSeller);
+}
 
- connection = await PostgresDBConnector().connection;
-  //product = Product.empty();
-  //product.setConnection();
- }
  dynamic sellerAddressHistoryQuery(int row) async
  {
   List<Map<String, Map<String, dynamic>>> result = await connection
@@ -186,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
             session: widget.session,
           ),
     );
-    connectDB();
+    setConnection();
     //saveWalletAddress(1); /** id alınacak */
       Future.delayed(Duration(seconds: 1), () {
     checkButtonStatus();
@@ -453,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ),
                                       ),
                                         const SizedBox(height: 16),
-                                    showCreateContractButton 
+                                    showCreateContractButton
                                       ? SizedBox(height: 1) 
                                       : ElevatedButton(
                                           onPressed: () {
