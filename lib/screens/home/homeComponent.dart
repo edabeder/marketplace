@@ -4,6 +4,7 @@ import '../../NewCartScreens/NewCartModel.dart';
 import '../../NewCartScreens/NewDBHelper.dart';
 import '../../NewCartScreens/Product.dart';
 import '../../module/PostgresDBConnector.dart';
+import '../sign_in/components/sign_form.dart';
 import '/components/product_card.dart';
 
 import '../../../size_config.dart';
@@ -58,6 +59,9 @@ class _HomeProductsState extends State<HomeProducts> {
   void initState() {
     super.initState();
     connectDB();
+    String? email = SignForm.getEmail(context);
+    print(email);
+    print("hi");
 
   }
 
@@ -164,3 +168,4 @@ class _HomeProductsState extends State<HomeProducts> {
     );
   }
 }
+
