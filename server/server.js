@@ -21,7 +21,7 @@ const config = {
 user: 'postgres',
 host: 'localhost',
 database: 'GeekchainDB',
-password: '12345',
+password: '1234',
 port: 5432, // default Postgres port
 };
 

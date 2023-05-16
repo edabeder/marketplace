@@ -24,13 +24,16 @@ Product.empty();
   String category = '';
   double price = 0;
   String img = '';
-  double total = 0;
   late PostgreSQLConnection connection;
   List<Product> productList = [];
   List<Product> cart = [];
   List<dynamic> sellers = [];
   List<String> productNames = [];
   List<double> prices = [];
+
+  List<Product>? getCart() {
+    return cart;
+  }
 
 void setConnection() async
 {
@@ -61,10 +64,31 @@ void getProducts() async
    }
    printCart(productList);
 }
-void addToCart(Product p)
+void addToCart(int id)
 {
-  cart.add(p);
-  total += p.price;
+    for (Product p in productList)
+  { 
+    if(p.productID == id)
+    {
+      cart.add(p);
+      print('add' + p.productName);     
+       return;
+    }
+    } 
+  }
+
+void removeFromCart(int id)
+{  
+  for (Product p in cart)
+  {
+    if(p.productID == id)
+    {
+       cart.remove(p); 
+       print('remove' + p.productName);
+       return;
+    }
+  }
+ 
 }
 // button to purchase the cart
 void buyProducts() async
@@ -84,7 +108,6 @@ void buyProducts() async
     productNames.add(p.productName);
     prices.add(p.price);
    }
-   print("total: " + total.toString());
 }
 void printCart(List<Product> list)
 {

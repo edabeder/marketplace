@@ -1,10 +1,11 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:badges/badges.dart';
+import 'package:untitled1/main.dart';
 import '/NewCartScreens/NewCartModel.dart';
 import '/NewCartScreens/NewDBHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:untitled1/NewCartScreens/Product.dart';
 import '/NewCartScreens/NewCartProvider.dart';
 
 
@@ -18,7 +19,14 @@ class NewCartScreen extends StatefulWidget {
 class _NewCartScreenState extends State<NewCartScreen> {
 
   DBHelper? dbHelper = DBHelper();
+  var product;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    product = Product.empty();
+  }
   @override
   Widget build(BuildContext context) {
     final CartProvider cart  = Provider.of<CartProvider>(context);
@@ -213,7 +221,14 @@ class _NewCartScreenState extends State<NewCartScreen> {
                 child: Column(
                   children: [
                     ReusableWidget(title: 'Total', value: r'$'+value.getTotalPrice().toStringAsFixed(2),),
-                    ElevatedButton(onPressed: () {}, child: Text("Purchase")),
+                    ElevatedButton(onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                        ),
+                      );
+                    }, child: Text("Purchase")),
                     
                   ],
                 ),

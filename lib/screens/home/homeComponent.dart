@@ -39,7 +39,6 @@ class _HomeProductsState extends State<HomeProducts> {
 
   void connectDB() async{
 
-    //connection = await PostgresDBConnector().connection;
     product = Product.empty();
     product.setConnection();
 
@@ -61,7 +60,6 @@ class _HomeProductsState extends State<HomeProducts> {
     connectDB();
 
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +109,7 @@ class _HomeProductsState extends State<HomeProducts> {
                                       child: InkWell(
                                         onTap: (){
                                           
-                                          print(index);
+                                          print(index+1);
                                           print(productName[index].toString());
                                           print( productPrice[index].toString());
                                           print( productPrice[index]);
