@@ -60,9 +60,6 @@ class _HomeProductsState extends State<HomeProducts> {
     super.initState();
     connectDB();
     String? email = SignForm.getEmail(context);
-    print(email);
-    print("hi");
-
   }
 
   @override
@@ -112,7 +109,7 @@ class _HomeProductsState extends State<HomeProducts> {
                                       alignment: Alignment.centerRight,
                                       child: InkWell(
                                         onTap: (){
-                                          
+                                          print(index+1);
                                           print(index+1);
                                           print(productName[index].toString());
                                           print( productPrice[index].toString());
@@ -120,9 +117,10 @@ class _HomeProductsState extends State<HomeProducts> {
                                           print('1');
                                           print(productImage[index].toString());
 
-
-                                            dbHelper!.insert(
+                                          dbHelper!.insert(
                                               Cart(
+                                                  id: index+1,
+                                                  productId: (index+1).toString(),
                                                   productName: productName[index].toString(),
                                                   price: productPrice[index],
                                                   quantity: 1,
@@ -131,8 +129,14 @@ class _HomeProductsState extends State<HomeProducts> {
 
                                             cart.addTotalPrice(double.parse(productPrice[index].toString()));
                                             cart.addCounter();
-                                          
+
                                             const SnackBar snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
+
+                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                                          }).onError((Object? error, StackTrace stackTrace){
+                                            print('error$error');
+                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                           });

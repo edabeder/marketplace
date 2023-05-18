@@ -12,13 +12,10 @@ late Product product;
 
   Future<Database?> get db async {
     
-    product = Product.empty();
-
     if (_db != null) {
       return _db;
     }
-
-    product.setConnection();
+    
     _db = await initDatabase();
         
     return _db;
@@ -33,14 +30,13 @@ late Product product;
 
   _onCreate (Database db , int version )async{
     await db
-        .execute('CREATE TABLE cart (id INTEGER PRIMARY KEY AUTOINCREMENT,productName TEXT, initialPrice REAL, quantity INTEGER , image TEXT )');
+        .execute('CREATE TABLE cart (id INTEGER PRIMARY KEY , productId VARCHAR UNIQUE ,productName TEXT, initialPrice REAL, quantity INTEGER , image TEXT )');
   }
 
 Future<Cart> insert(Cart cart) async {
   Database? dbClient = await db;
   int id = await dbClient!.insert('cart', cart.toMap());
   cart.id = id;
-  product.addToCart(id);
   return cart;
 }
 
@@ -54,7 +50,6 @@ Future<Cart> insert(Cart cart) async {
 
   Future<int> delete(int id)async{
     Database? dbClient = await db ;
-      product.removeFromCart(id);
     return await dbClient!.delete(
         'cart',
         where: 'id = ?',
@@ -65,7 +60,7 @@ Future<Cart> insert(Cart cart) async {
 
   Future<int> updateQuantity(Cart cart)async{
     Database? dbClient = await db ;
-      product.addToCart(cart.id as int);
+
     return await dbClient!.update(
         'cart',
         cart.toMap(),

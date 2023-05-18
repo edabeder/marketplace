@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:untitled1/NewCartScreens/NewCartModel.dart';
+import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
 import 'package:untitled1/screens/home/custom_home_screen.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
@@ -13,6 +15,7 @@ import 'package:web3dart/web3dart.dart';
 import 'package:untitled1/NewCartScreens/Product.dart';
 import 'package:untitled1/module/PostgresDBConnector.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
     required this.session,
@@ -39,7 +42,9 @@ class _HomeScreenState extends State<HomeScreen> {
    Product product = Product.empty();
   late PostgreSQLConnection connection;
   bool isSeller = false;
-
+  DBHelper? dbHelper = DBHelper();
+  late List<Cart> cartList = [] ;
+  
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
 
@@ -58,8 +63,10 @@ void setConnection() async
 {
   connection = await PostgresDBConnector().connection;
 
-String? email = SignForm.getEmail(context);
-print(email);
+  cartList = await dbHelper!.getCartList();
+
+//String? email = SignForm.getEmail(context);
+//print(email);
 //setCustomerStatus(email!);
 isSeller = false;
 }
@@ -172,7 +179,8 @@ List<Map<String, Map<String, dynamic>>> result = await connection
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     product.buyProducts();
-    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices);
+    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices).then((value) => cartList = []);
+    
   }
   void requestReturn(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
@@ -554,7 +562,7 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                     showCreateContractButton && !isSeller
                                       ? SizedBox(height: 1) 
                                       : ElevatedButton(
-                                          onPressed: product.getCart()!.isEmpty ? null : () {
+                                          onPressed: cartList.isEmpty ? null : () {
                                             payShopping();
                                       },
                                           style: buttonStyle,
