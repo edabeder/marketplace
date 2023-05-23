@@ -88,6 +88,13 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.get('/api/get-global-user-id', (req, res) => {
+  // globalUserId'yi döndür
+  res.status(200).send({ customerId: globalUserId });
+});
+
+
+
 
 app.post('/api/logout', (req, res) => {
   // Kullanıcının oturumunu sonlandırın
@@ -149,6 +156,7 @@ app.get('/api/history/:customerId', async (req, res) => {
     );
 
     console.log(history.rows); // Konsol çıktısı
+    console.log(customerId);
 
     res.status(200).send(history.rows);
   } catch (err) {
