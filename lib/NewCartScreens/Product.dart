@@ -19,6 +19,7 @@ class Product
   });
 Product.empty();
 
+static bool isSeller = false;
   String brand = '';
   String productName = '';
   int sellerID = 0;

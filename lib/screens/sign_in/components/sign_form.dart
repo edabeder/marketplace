@@ -11,17 +11,12 @@ import '/screens/seller/seller_screen.dart';
 import '../../../components/default_button.dart';
 import '../../../constants.dart';
 import '../../../size_config.dart';
+import 'package:untitled1/NewCartScreens/Product.dart';
+
 export 'sign_form.dart'; // modified
 
 class SignForm extends StatefulWidget {
   const SignForm({super.key});
-
-//modified
-static String? getEmail(BuildContext context) {
-    final _SignFormState? state =
-        context.findAncestorStateOfType<_SignFormState>();
-    return state?.email;
-  }
 
   @override
   _SignFormState createState() => _SignFormState();
@@ -84,6 +79,7 @@ class _SignFormState extends State<SignForm> {
           ),
         );
         final isSeller = await isUserSeller(email);
+        Product.isSeller = isSeller;
         if (isSeller) {
           Navigator.push(
             context,

@@ -4,6 +4,7 @@ import 'package:untitled1/NewCartScreens/NewCartModel.dart';
 import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
 import 'package:untitled1/screens/home/custom_home_screen.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
+import '../../../../screens/profile/order_screen.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
 import '/infrastructures/service/cubit/web3_cubit.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -65,35 +66,9 @@ void setConnection() async
 
   cartList = await dbHelper!.getCartList();
 
-//String? email = SignForm.getEmail(context);
-//print(email);
-//setCustomerStatus(email!);
-isSeller = false;
-}
-
-void setCustomerStatus(String email) async
-{
-List<Map<String, Map<String, dynamic>>> result = await connection
-    .mappedResultsQuery('SELECT id FROM public.seller WHERE email = @aEmail',
-         substitutionValues: {
-       'aEmail': email,
-       });
-
-  if (result.length == 0) {
-    isSeller = false;
-    List<Map<String, Map<String, dynamic>>> buyerid = await connection
-    .mappedResultsQuery('SELECT id FROM public.customer WHERE email = @aEmail',
-         substitutionValues: {
-       'aEmail': email,
-       });
-
-      customerid = buyerid[0]['id'] as int;   
-  } else {
-    isSeller = true;
-
-      customerid = result[0]['id'] as int;        
-  }
-  print('customer id: ' + customerid.toString());
+  isSeller = Product.isSeller;
+  print('seller abisi: ' + isSeller.toString());
+  print("id geldi mi: " +  GlobalData.globalUserId);
 }
 
  dynamic sellerAddressHistoryQuery(int row) async

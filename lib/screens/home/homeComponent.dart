@@ -59,7 +59,6 @@ class _HomeProductsState extends State<HomeProducts> {
   void initState() {
     super.initState();
     connectDB();
-    String? email = SignForm.getEmail(context);
   }
 
   @override
