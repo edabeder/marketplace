@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:untitled1/NewCartScreens/NewCartModel.dart';
+import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
 import 'package:untitled1/screens/home/custom_home_screen.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
@@ -12,6 +14,7 @@ import '/configs/themes.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:untitled1/NewCartScreens/Product.dart';
 import 'package:untitled1/module/PostgresDBConnector.dart';
+import 'package:untitled1/screens/sign_in/components/sign_form.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -34,14 +37,17 @@ class _HomeScreenState extends State<HomeScreen> {
   String networkName = '';
   late String contractAddress = '';
   String amountInput = '';
+  int customerid = 0;
   late BigInt balance = BigInt.zero;
-  var product;
+   Product product = Product.empty();
   late PostgreSQLConnection connection;
   bool isSeller = false;
-
+  DBHelper? dbHelper = DBHelper();
+  late List<Cart> cartList = [] ;
+  
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
-  
+
   ButtonStyle buttonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all(0),
     backgroundColor: MaterialStateProperty.all(
@@ -56,29 +62,60 @@ class _HomeScreenState extends State<HomeScreen> {
 void setConnection() async
 {
   connection = await PostgresDBConnector().connection;
-  setCustomerStatus("");
 
+  cartList = await dbHelper!.getCartList();
+
+//String? email = SignForm.getEmail(context);
+//print(email);
+//setCustomerStatus(email!);
+isSeller = false;
 }
+
 void setCustomerStatus(String email) async
 {
 List<Map<String, Map<String, dynamic>>> result = await connection
-    .mappedResultsQuery('SELECT * FROM public.seller WHERE email = @aEmail',
+    .mappedResultsQuery('SELECT id FROM public.seller WHERE email = @aEmail',
          substitutionValues: {
        'aEmail': email,
        });
 
   if (result.length == 0) {
     isSeller = false;
+    List<Map<String, Map<String, dynamic>>> buyerid = await connection
+    .mappedResultsQuery('SELECT id FROM public.customer WHERE email = @aEmail',
+         substitutionValues: {
+       'aEmail': email,
+       });
+
+      customerid = buyerid[0]['id'] as int;   
   } else {
     isSeller = true;
-  }
 
+      customerid = result[0]['id'] as int;        
+  }
+  print('customer id: ' + customerid.toString());
 }
 
  dynamic sellerAddressHistoryQuery(int row) async
  {
   List<Map<String, Map<String, dynamic>>> result = await connection
     .mappedResultsQuery('SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
+         substitutionValues: {
+       'aRow': row,
+       });
+
+
+  if (result.length == 1) {
+     for (Map<String, Map<String, dynamic>> element in result) {
+      print(result);         
+     }
+   }
+   return result;
+ }
+  dynamic buyerAddressHistoryQuery(int row) async
+ {
+  List<Map<String, Map<String, dynamic>>> result = await connection
+    .mappedResultsQuery('SELECT c.walletaddress FROM public.history h JOIN public.customer c ON h.customerid = c.id WHERE h.row = @aRow',
          substitutionValues: {
        'aRow': row,
        });
@@ -141,10 +178,9 @@ List<Map<String, Map<String, dynamic>>> result = await connection
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
-    //product.addToCart(product.productList[0]);
-    //product.printCart();
     product.buyProducts();
-    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices);
+    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices).then((value) => cartList = []);
+    
   }
   void requestReturn(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
@@ -180,17 +216,17 @@ List<Map<String, Map<String, dynamic>>> result = await connection
          EthereumAddress e = await context.read<Web3Cubit>().getSellerContract();
      contractAddress = e.hex;
   }
-    void returnTokensToCustomer() {
+    void returnTokensToCustomer(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // DB conn
-    context.read<Web3Cubit>().returnTokensToCustomer('buyerAddr', 0);
+    context.read<Web3Cubit>().returnTokensToCustomer(buyerAddressHistoryQuery(row), row);
   }
-    void sendTokensToSeller() {
+    void sendTokensToSeller(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // DB conn
-    context.read<Web3Cubit>().sendTokensToSeller('buyerAddr', 0);
+    context.read<Web3Cubit>().sendTokensToSeller(buyerAddressHistoryQuery(row), row);
   }
 
   @override
@@ -205,7 +241,7 @@ List<Map<String, Map<String, dynamic>>> result = await connection
           ),
     );
     setConnection();
-    //saveWalletAddress(1); /** id alınacak */
+    //saveWalletAddress(customerid);
       Future.delayed(Duration(seconds: 1), () {
     checkButtonStatus();
     if(!isSeller)
@@ -521,7 +557,17 @@ List<Map<String, Map<String, dynamic>>> result = await connection
                                             color: Colors.white,
                                           ), 
                                           
-                                      ),                                        
+                                      ),  
+                                      const SizedBox(height: 16),
+                                    showCreateContractButton && !isSeller
+                                      ? SizedBox(height: 1) 
+                                      : ElevatedButton(
+                                          onPressed: cartList.isEmpty ? null : () {
+                                            payShopping();
+                                      },
+                                          style: buttonStyle,
+                                          child: const Text("Purchase Cart"),
+                                        ),                                      
                                     ],
                                   );
                               },

@@ -11,8 +11,8 @@ class PostgresDBConnector {
   }
 
   Future<void> _connect() async {
-    _connection = PostgreSQLConnection('10.0.2.2', 5433, 'GeekchainDB',
-        username: 'postgres', password: 'gizem');
+    _connection = PostgreSQLConnection('10.0.2.2', 5432, 'GeekchainDB',
+        username: 'postgres', password: '1234');
     await _connection.open();
   }
 

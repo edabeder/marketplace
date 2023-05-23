@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:postgres/postgres.dart';
+import 'package:untitled1/NewCartScreens/NewCartModel.dart';
+import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
 import 'package:web3dart/web3dart.dart';
 import 'package:untitled1/module/PostgresDBConnector.dart';
 
@@ -24,19 +26,24 @@ Product.empty();
   String category = '';
   double price = 0;
   String img = '';
-  double total = 0;
   late PostgreSQLConnection connection;
   List<Product> productList = [];
   List<Product> cart = [];
   List<dynamic> sellers = [];
   List<String> productNames = [];
   List<double> prices = [];
+  DBHelper? dbHelper = DBHelper();
+
+  List<Product>? getCart() {
+    return cart;
+  }
 
 void setConnection() async
 {
   connection = await PostgresDBConnector().connection;
-  getProducts();
 
+      getProducts();
+  
 }
 void getProducts() async
 {
@@ -61,14 +68,29 @@ void getProducts() async
    }
    printCart(productList);
 }
-void addToCart(Product p)
+
+void fillCartList() async
 {
-  cart.add(p);
-  total += p.price;
+  setConnection();
+List<Cart> cartList = await dbHelper!.getCartList(); 
+for (Product p in productList) {
+  for (Cart cartItem in cartList) {
+    if (p.productID == cartItem.id) {
+          int quantity = cartItem.quantity ?? 0; // Convert to non-nullable int
+          for (int i = 0; i < quantity; i++) {
+              cart.add(p);
+              print('Added ${p.productName}');
+          }
+      break; // Break the inner loop and move to the next product
+    }
+  }
 }
+}
+
 // button to purchase the cart
 void buyProducts() async
 {
+  fillCartList();
   for(Product p in cart)
    {
         List<Map<String, Map<String, dynamic>>> result = await connection
@@ -84,7 +106,6 @@ void buyProducts() async
     productNames.add(p.productName);
     prices.add(p.price);
    }
-   print("total: " + total.toString());
 }
 void printCart(List<Product> list)
 {

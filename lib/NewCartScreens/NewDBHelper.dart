@@ -3,18 +3,21 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart';
 import 'dart:io' as io;
 import '/NewCartScreens/NewCartModel.dart';
-
+import 'package:untitled1/NewCartScreens/Product.dart';
 
 class DBHelper {
 
 static Database? _db;
+late Product product;
 
   Future<Database?> get db async {
+    
     if (_db != null) {
       return _db;
     }
-
+    
     _db = await initDatabase();
+        
     return _db;
   }
 
@@ -27,7 +30,7 @@ static Database? _db;
 
   _onCreate (Database db , int version )async{
     await db
-        .execute('CREATE TABLE cart (id INTEGER PRIMARY KEY ,productName TEXT, initialPrice REAL, quantity INTEGER , image TEXT )');
+        .execute('CREATE TABLE cart (id INTEGER PRIMARY KEY , productId VARCHAR UNIQUE ,productName TEXT, initialPrice REAL, quantity INTEGER , image TEXT )');
   }
 
 Future<Cart> insert(Cart cart) async {
@@ -52,10 +55,12 @@ Future<Cart> insert(Cart cart) async {
         where: 'id = ?',
         whereArgs: [id]
     );
+    
   }
 
   Future<int> updateQuantity(Cart cart)async{
     Database? dbClient = await db ;
+
     return await dbClient!.update(
         'cart',
         cart.toMap(),

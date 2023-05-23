@@ -18,11 +18,11 @@ app.use(session({
 
 // PostgreSQL bağlantısı için konfigürasyon objesi
 const config = {
-  user: 'postgres',
-  host: 'localhost',
-  database: 'GeekchainDB',
-  password: 'gizem',
-  port: 5433, // default Postgres port
+user: 'postgres',
+host: 'localhost',
+database: 'GeekchainDB',
+password: '12345',
+port: 5432, // default Postgres port
 };
 
 // PostgreSQL veritabanına bağlan

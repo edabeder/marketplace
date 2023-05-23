@@ -1,10 +1,11 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:badges/badges.dart';
+import 'package:untitled1/main.dart';
 import '/NewCartScreens/NewCartModel.dart';
 import '/NewCartScreens/NewDBHelper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'package:untitled1/NewCartScreens/Product.dart';
 import '/NewCartScreens/NewCartProvider.dart';
 
 
@@ -18,7 +19,14 @@ class NewCartScreen extends StatefulWidget {
 class _NewCartScreenState extends State<NewCartScreen> {
 
   DBHelper? dbHelper = DBHelper();
+  var product;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    product = Product.empty();
+  }
   @override
   Widget build(BuildContext context) {
     final CartProvider cart  = Provider.of<CartProvider>(context);
@@ -111,7 +119,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                 ),
 
                                                 const SizedBox(height: 5,),
-                                                Text(' '+r'$'+ snapshot.data![index].price.toString() ,
+                                                Text(' '+r''+ snapshot.data![index].price.toString() + ' wei',
                                                   style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                                 ),
                                                 const SizedBox(height: 5,),
@@ -134,7 +142,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                         child: Row(
                                                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                           children: [
-                                                            InkWell(
+InkWell(
                                                                 onTap: (){
 
                                                                   int quantity =  snapshot.data![index].quantity! ;
@@ -145,6 +153,8 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                                   if(quantity > 0){
                                                                     dbHelper!.updateQuantity(
                                                                         Cart(
+                                                                            id: snapshot.data![index].id!,
+                                                                            productId: snapshot.data![index].id!.toString(),
                                                                             productName: snapshot.data![index].productName!,
                                                                             price: snapshot.data![index].price!,
                                                                             quantity: quantity,
@@ -161,7 +171,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                                 },
                                                                 child: const Icon(Icons.remove , color: Colors.white,)),
                                                             Text( snapshot.data![index].quantity.toString(), style: const TextStyle(color: Colors.white)),
-                                                            InkWell(
+InkWell(
                                                                 onTap: (){
                                                                   int quantity =  snapshot.data![index].quantity! ;
                                                                   double price = snapshot.data![index].price!;
@@ -170,6 +180,8 @@ class _NewCartScreenState extends State<NewCartScreen> {
 
                                                                   dbHelper!.updateQuantity(
                                                                       Cart(
+                                                                          id: snapshot.data![index].id!,
+                                                                          productId: snapshot.data![index].id!.toString(),
                                                                           productName: snapshot.data![index].productName!,
                                                                           price: snapshot.data![index].price!,
                                                                           quantity: quantity,
@@ -183,7 +195,6 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                                   });
                                                                 },
                                                                 child: const Icon(Icons.add , color: Colors.white,)),
-
                                                           ],
                                                         ),
                                                       ),
@@ -212,8 +223,15 @@ class _NewCartScreenState extends State<NewCartScreen> {
                 visible: value.getTotalPrice().toStringAsFixed(2) == '0.00' ? false : true,
                 child: Column(
                   children: [
-                    ReusableWidget(title: 'Total', value: r'$'+value.getTotalPrice().toStringAsFixed(2),),
-                    ElevatedButton(onPressed: () {}, child: Text("Purchase")),
+                    ReusableWidget(title: 'Total', value: r'wei'+value.getTotalPrice().toStringAsFixed(2),),
+                    ElevatedButton(onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MyHomePage(),
+                        ),
+                      );
+                    }, child: Text("Purchase")),
                     
                   ],
                 ),

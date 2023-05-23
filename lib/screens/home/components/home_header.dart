@@ -58,19 +58,7 @@ class HomeHeader extends StatelessWidget {
             onTap: (){
               Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => const NewCartScreen()));
             },
-            child: Center(
-              child: badges.Badge(
-                badgeContent: Consumer<CartProvider>(
-                  builder: (BuildContext context, CartProvider value , Widget? child){
-                    return Text(value.getCounter().toString(),style: const TextStyle(color: Colors.white));
-                  },
-
-                ),
-                animationDuration: const Duration(milliseconds: 300),
-                animationType: BadgeAnimationType.slide,
-                child: const Icon(Icons.shopping_bag_outlined),
-              ),
-            ),
+            child: const Icon(Icons.shopping_bag_outlined),
           ),
         ],
       ),

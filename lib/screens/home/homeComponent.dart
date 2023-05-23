@@ -4,6 +4,7 @@ import '../../NewCartScreens/NewCartModel.dart';
 import '../../NewCartScreens/NewDBHelper.dart';
 import '../../NewCartScreens/Product.dart';
 import '../../module/PostgresDBConnector.dart';
+import '../sign_in/components/sign_form.dart';
 import '/components/product_card.dart';
 
 import '../../../size_config.dart';
@@ -39,7 +40,6 @@ class _HomeProductsState extends State<HomeProducts> {
 
   void connectDB() async{
 
-    //connection = await PostgresDBConnector().connection;
     product = Product.empty();
     product.setConnection();
 
@@ -59,9 +59,8 @@ class _HomeProductsState extends State<HomeProducts> {
   void initState() {
     super.initState();
     connectDB();
-
+    String? email = SignForm.getEmail(context);
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -110,17 +109,18 @@ class _HomeProductsState extends State<HomeProducts> {
                                       alignment: Alignment.centerRight,
                                       child: InkWell(
                                         onTap: (){
-                                          
-                                          print(index);
+                                          print(index+1);
+                                          print(index+1);
                                           print(productName[index].toString());
                                           print( productPrice[index].toString());
                                           print( productPrice[index]);
                                           print('1');
                                           print(productImage[index].toString());
 
-
-                                            dbHelper!.insert(
+                                          dbHelper!.insert(
                                               Cart(
+                                                  id: index+1,
+                                                  productId: (index+1).toString(),
                                                   productName: productName[index].toString(),
                                                   price: productPrice[index],
                                                   quantity: 1,
@@ -129,8 +129,14 @@ class _HomeProductsState extends State<HomeProducts> {
 
                                             cart.addTotalPrice(double.parse(productPrice[index].toString()));
                                             cart.addCounter();
-                                          
+
                                             const SnackBar snackBar = SnackBar(backgroundColor: Colors.green,content: Text('Product is added to cart'), duration: Duration(seconds: 1),);
+
+                                            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                                          }).onError((Object? error, StackTrace stackTrace){
+                                            print('error$error');
+                                            const SnackBar snackBar = SnackBar(backgroundColor: Colors.red ,content: Text('Product is already added in cart'), duration: Duration(seconds: 1));
 
                                             ScaffoldMessenger.of(context).showSnackBar(snackBar);
                                           });
@@ -166,3 +172,4 @@ class _HomeProductsState extends State<HomeProducts> {
     );
   }
 }
+
