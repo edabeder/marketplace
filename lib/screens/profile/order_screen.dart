@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -32,10 +31,6 @@ class Order {
   }
 }
 
-class GlobalData {
-  static String globalUserId = '';
-}
-
 class OrdersScreen extends StatefulWidget {
   const OrdersScreen({Key? key}) : super(key: key);
 
@@ -45,22 +40,55 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   List<Order> orders = [];
+  late String globalUserId;
 
   @override
   void initState() {
     super.initState();
-    GlobalData.globalUserId =
-        ''; // Kullanıcı giriş yaptığında bu değişkene değer atanacak
-    fetchOrders();
+    globalUserId = GlobalData.globalUserId;
+    if (globalUserId.isEmpty) {
+      fetchGlobalUserId(); // Fetch the global user ID
+    } else {
+      fetchOrders();
+    }
   }
 
-  Future<void> fetchOrders() async {
-    final url = Uri.parse(
-        'http://10.0.2.2:3000/api/history/${GlobalData.globalUserId}');
+  Future<void> fetchGlobalUserId() async {
+    final url = Uri.parse('http://10.0.2.2:3000/api/get-global-user-id');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      List<dynamic> jsonList = json.decode(response.body) as List<dynamic>;
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      String customerId = jsonResponse['customerId']
+          .toString(); // Convert the customer ID to String
+      setState(() {
+        globalUserId = customerId;
+        GlobalData.globalUserId = customerId;
+      });
+      fetchOrders();
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Failed to fetch global user ID. Please try again.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
+    }
+  }
+
+  Future<void> fetchOrders() async {
+    final response = await http
+        .get(Uri.parse('http://10.0.2.2:3000/api/history/$globalUserId'));
+
+    if (response.statusCode == 200) {
+      List<dynamic> jsonList = json.decode(response.body);
       List<Order> fetchedOrders =
           jsonList.map((json) => Order.fromJson(json)).toList();
 
@@ -88,7 +116,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Orders'),
+        title: const Text('Orders'),
       ),
       body: ListView.builder(
         itemCount: orders.length,
@@ -104,4 +132,8 @@ class _OrdersScreenState extends State<OrdersScreen> {
       ),
     );
   }
+}
+
+class GlobalData {
+  static String globalUserId = '';
 }
