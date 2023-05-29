@@ -1,9 +1,11 @@
-
-GET http://10.0.2.2:3000/api/history/5 HTTP/1.1
+POST http://10.0.2.2:3000/api/products HTTP/1.1
 Content-Type: application/json
 
 {
-    
-
-
+  "brand": "ACME",
+  "pName": "Product Name",
+  "sellerID": 1,
+  "price": 123,
+  "pPicture": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAgAElEQVR4Xu2dCXRU1ZmAnT+VD8m/VxsL0lKQEIQoEgiJgsW8+ZvzmxY2wWLWNtrT2W28T8fvv+Z/kjflM9zJz/nO+8vzntz/nO+8vzH1q3f8gxt6+ru7bXX/x9quLf0fvrS+LZftV/5/m5e/0/7QdHf71+03n/U16/m9X/f5ul7/1Z5f5/5vr//SdlA/ymz8AAAD//3gA7gAA4ADwAAAPA...<base64-encoded-image-data>",
+  "category": "Electronics"
 }

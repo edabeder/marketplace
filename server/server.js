@@ -21,8 +21,8 @@ const config = {
 user: 'postgres',
 host: 'localhost',
 database: 'GeekchainDB',
-password: '12345',
-port: 5432, // default Postgres port
+password: 'gizem',
+port: 5433, // default Postgres port
 };
 
 // PostgreSQL veritabanına bağlan
@@ -243,20 +243,21 @@ app.post('/api/register', async (req, res) => {
 app.post('/api/products', async (req, res) => {
   const { brand, pname, sellerid, price, ppicture, category } = req.body;
 
-const base64EncodedImage = Buffer.from(ppicture, "base64"); // base64 decode işlemi ve bytea türüne dönüştürme
+//const base64EncodedImage = Buffer.from(ppicture, "base64"); // base64 decode işlemi ve bytea türüne dönüştürme
 
 try {
   const newProduct = await pool.query(
     `INSERT INTO product (brand, "pname", "sellerid", price, "ppicture", category)
      VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING *`,
-    [brand, pname, sellerid, price, base64EncodedImage, category]
+    [brand, pname, sellerid, price, ppicture, category]
   );
   res.status(201).json(newProduct.rows[0]);
 } catch (err) {
   console.error(err.message);
   res.status(500).send({ message: "Server error" });
 }
+
 
   
 });
@@ -339,7 +340,7 @@ app.get('/api/products/search/:query', async (req, res) => {
   try {
     const searchQuery = req.params.query;
     const searchResults = await pool.query(
-      'SELECT * FROM product WHERE brand LIKE $1 OR "pName" LIKE $1',
+      'SELECT * FROM product WHERE brand LIKE $1 OR "pname" LIKE $1',
       [`%${searchQuery}%`]
     );
     res.json(searchResults.rows);

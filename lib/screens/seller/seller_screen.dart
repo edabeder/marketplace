@@ -81,10 +81,10 @@ class _SellerScreenState extends State<SellerScreen> {
         Uri.parse('http://10.0.2.2:3000/api/products'),
         body: {
           'brand': _brandController.text,
-          'pName': _nameController.text,
-          'sellerID': _sellerIDController.text,
+          'pname': _nameController.text,
+          'sellerid': _sellerIDController.text,
           'price': _priceController.text,
-          'pPicture': pickedImage.toString(),
+          'ppicture': pickedImage.toString(),
           'category': _categoryController.text,
         },
       );
