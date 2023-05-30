@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../helper/keyboard.dart';
+import '../../main.dart';
 
 class SellerScreen extends StatefulWidget {
   @override
@@ -170,6 +171,17 @@ class _SellerScreenState extends State<SellerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Seller Screen'),
+        actions: <Widget>[
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (BuildContext context) => MyHomePage(),
+              ),
+            ),
+            icon: const Icon(Icons.home),
+          ),
+        ]
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
