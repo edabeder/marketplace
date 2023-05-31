@@ -21,9 +21,9 @@ const config = {
 user: 'postgres',
 host: 'localhost',
 database: 'GeekchainDB',
-password: 'gizem',
-port: 5433, // default Postgres port
-};
+password: '12345',
+port: 5432, // default Postgres port
+}
 
 // PostgreSQL veritabanına bağlan
 const pool = new pg.Pool(config);
@@ -241,16 +241,16 @@ app.post('/api/register', async (req, res) => {
 
 
 app.post('/api/products', async (req, res) => {
-  const { brand, pname, sellerid, price, ppicture, category } = req.body;
+  const { brand, pname, sellerid, productprice, ppicture, category } = req.body;
 
 //const base64EncodedImage = Buffer.from(ppicture, "base64"); // base64 decode işlemi ve bytea türüne dönüştürme
 
 try {
   const newProduct = await pool.query(
-    `INSERT INTO product (brand, "pname", "sellerid", price, "ppicture", category)
+    `INSERT INTO product (brand, "pname", "sellerid", productprice, "ppicture", category)
      VALUES ($1, $2, $3, $4, $5, $6)
      RETURNING *`,
-    [brand, pname, sellerid, price, ppicture, category]
+    [brand, pname, sellerid, productprice, ppicture, category]
   );
   res.status(201).json(newProduct.rows[0]);
 } catch (err) {
@@ -286,15 +286,17 @@ app.delete('/api/products/:id', async (req, res) => {
 
 app.put('/api/products/:id', async (req, res) => {
   const { id } = req.params;
-  const { brand, pname, sellerid, price, ppicture, category } = req.body;
+  const { brand, pname, sellerid, productprice, ppicture, category } = req.body;
 
   try {
     const updatedProduct = await pool.query(
       `UPDATE product
-       SET brand = $1, "pname" = $2, "sellerid" = $3, price = $4, "ppicture" = $5, category = $6
+       SET brand = $1, "pname" = $2, "sellerid" = $3, productprice
+ = $4, "ppicture" = $5, category = $6
        WHERE id = $7
        RETURNING *`,
-      [brand, pname, sellerid, price, ppicture, category, id]
+      [brand, pname, sellerid, productprice
+, ppicture, category, id]
     );
 
     if (updatedProduct.rows.length === 0) {
