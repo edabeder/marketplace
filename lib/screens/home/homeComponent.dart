@@ -3,6 +3,7 @@ import 'package:postgres/postgres.dart';
 import '../../NewCartScreens/NewCartModel.dart';
 import '../../NewCartScreens/NewDBHelper.dart';
 import '../../NewCartScreens/Product.dart';
+import '../../constants.dart';
 import '../../module/PostgresDBConnector.dart';
 import '../sign_in/components/sign_form.dart';
 import '/components/product_card.dart';
@@ -30,6 +31,7 @@ class _HomeProductsState extends State<HomeProducts> {
   List<double> productPrice = [] ;
   List<String> productImage = [
     'https://gmedia.playstation.com/is/image/SIEPDC/dualsense-thumbnail-ps5-01-en-17jul20?' ,
+    'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/34dec221-0f96-4c6c-b76e-40b42f679e26/air-jordan-1-low-se-ayakkab%C4%B1s%C4%B1-j6GSq5.png' ,
     'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/34dec221-0f96-4c6c-b76e-40b42f679e26/air-jordan-1-low-se-ayakkab%C4%B1s%C4%B1-j6GSq5.png' ,
   ] ;
 
@@ -144,11 +146,16 @@ class _HomeProductsState extends State<HomeProducts> {
                                           height: 35,
                                           width: 100,
                                           decoration: BoxDecoration(
-                                              color: Colors.orange.shade300,
-                                              borderRadius: BorderRadius.circular(5)
+                                              color: kPrimaryColor,
+                                              borderRadius: BorderRadius.circular(20),
+
                                           ),
-                                          child: const Center(
-                                            child:  Text('Add to cart' , style: TextStyle(color: Colors.white),),
+
+                                          child: Center(
+                                            child:  Text('Add to cart' ,
+                                              style: TextStyle(
+                                                fontSize: getProportionateScreenWidth(15),
+                                                color: Colors.white,),),
                                           ),
                                         ),
                                       ),

@@ -75,7 +75,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Sophon',
+        title: '',
         debugShowCheckedModeBanner: false,
         theme: buildDefaultTheme(context),
         home: SplashScreen(),

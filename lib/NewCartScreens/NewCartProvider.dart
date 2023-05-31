@@ -15,9 +15,13 @@ class CartProvider with ChangeNotifier{
   late Future<List<Cart>> _cart ;
   Future<List<Cart>> get cart => _cart ;
 
-  Future<List<Cart>> getData () async {
-    _cart = db.getCartList();
-    return _cart ;
+  Future<List<Cart>> getData() async {
+    List<Cart> _cart = await db.getCartList();
+    if (_cart.isEmpty) {
+      // _cart is empty
+      _totalPrice = 0.00;
+    }
+    return _cart;
   }
 
 

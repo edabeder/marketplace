@@ -1,5 +1,10 @@
+import 'dart:developer';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:untitled1/module/home/interfaces/screens/home_screen.dart';
 
+import '../../../infrastructures/service/cubit/web3_cubit.dart';
+import '../../../theme.dart';
 import '../../sign_in/sign_in_screen.dart';
 import 'package:flutter/material.dart';
 import '../order_screen.dart';
@@ -17,6 +22,7 @@ class Body extends StatelessWidget {
     if (response.statusCode == 200) {
       // İstek başarılı, logout işlemi tamamlandı
       // İstediğiniz ek işlemleri burada yapabilirsiniz
+
       Navigator.push(
         context,
         MaterialPageRoute(
@@ -71,6 +77,10 @@ class Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context);
+    final double width = MediaQuery.of(context).size.width;
+    final double height = MediaQuery.of(context).size.height;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(

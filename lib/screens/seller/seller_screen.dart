@@ -6,8 +6,10 @@ import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../../constants.dart';
 import '../../helper/keyboard.dart';
 import '../../main.dart';
+import '../../size_config.dart';
 
 class SellerScreen extends StatefulWidget {
   @override
@@ -171,6 +173,7 @@ class _SellerScreenState extends State<SellerScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Seller Screen'),
+        backgroundColor: Color(0xFFfe6796),
         actions: <Widget>[
           IconButton(
             onPressed: () => Navigator.push(
@@ -207,12 +210,24 @@ class _SellerScreenState extends State<SellerScreen> {
                     onPressed: () {
                       pickedImage = _pickImage(ImageSource.gallery);
                     },
+                    style: TextButton.styleFrom(
+                      shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      primary: Colors.white,
+                      backgroundColor: kPrimaryColor,
+                    ),
                     child: Text('Gallery'),
                   ),
                   ElevatedButton(
                     onPressed: () {
                       pickedImage = _pickImage(ImageSource.camera);
                     },
+                    style: TextButton.styleFrom(
+                      shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      primary: Colors.white,
+                      backgroundColor: kPrimaryColor,
+                    ),
                     child: Text('Camera'),
                   ),
                 ],
@@ -269,14 +284,24 @@ class _SellerScreenState extends State<SellerScreen> {
               ElevatedButton(
                   child: _isLoading
                       ? CircularProgressIndicator()
-                      : Text('Add Product'),
+                      : Text('Add Product',
+                    style: TextStyle(
+                      fontSize: getProportionateScreenWidth(18),
+                      color: Colors.white,),),
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       _formKey.currentState!.save();
                       addProduct();
                       KeyboardUtil.hideKeyboard(context);
                     }
-                  }),
+                  },
+                style: TextButton.styleFrom(
+                  shape:
+                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  primary: Colors.white,
+                  backgroundColor: kPrimaryColor,
+                ),
+              ),
               Expanded(
                 child: ListView.builder(
                   itemCount: _products.length,

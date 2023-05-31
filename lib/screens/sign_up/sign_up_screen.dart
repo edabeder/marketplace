@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '/configs/themes.dart';
 
 class SignUp extends StatelessWidget {
   const SignUp({super.key});
@@ -9,6 +10,8 @@ class SignUp extends StatelessWidget {
     return const MaterialApp(
       title: 'Add User',
       home: AddUserScreen(),
+      color: Color(0xFFfe6796),
+
     );
   }
 }

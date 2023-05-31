@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import '../../constants.dart';
+import '../../size_config.dart';
 import '../home/custom_home_screen.dart';
 import '../../../components/default_button.dart';
 import 'package:flutter/material.dart';
 import '../seller/seller_screen.dart';
 import '../sign_in/sign_in_screen.dart';
 import '../splash/splash_screen.dart';
+import '/configs/themes.dart';
 
 import 'dart:async';
 
@@ -18,6 +21,7 @@ class RegisterPage extends StatelessWidget {
     return const MaterialApp(
       title: 'Add User',
       home: AddUserScreen(),
+      color: Color(0xFFfe6796),
     );
   }
 }
@@ -122,6 +126,7 @@ class _AddUserScreenState extends State<AddUserScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add User'),
+        backgroundColor: Color(0xFFfe6796),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -225,22 +230,42 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   onPressed: () {
                     _submitForm();
                   },
-                  child: const Text('Add User Deneme'),
+                  style: TextButton.styleFrom(
+                    shape:
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    primary: Colors.white,
+                    backgroundColor: kPrimaryColor,
+                  ),
+                  child: Text('Add User Deneme' ,  style: TextStyle(fontSize: getProportionateScreenHeight(18),
+                      color: Colors.white)),
                 ),
-                const SizedBox(height: 20),
                 ElevatedButton(
-                  child: const Text('Home screen'),
+                  child:  Text('Home screen' ,  style: TextStyle(fontSize: getProportionateScreenHeight(18),
+                      color: Colors.white)),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => CustomHomeScreen()),
                   ),
+                  style: TextButton.styleFrom(
+                    shape:
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    primary: Colors.white,
+                    backgroundColor: kPrimaryColor,
+                  ),
                 ),
                 ElevatedButton(
-                  child: const Text('Seller Screen'),
+                  child: Text('Seller Screen',  style: TextStyle(fontSize: getProportionateScreenHeight(18),
+                    color: Colors.white)),
                   onPressed: () => Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (BuildContext context) => SellerScreen()),
+                  ),
+                  style: TextButton.styleFrom(
+                    shape:
+                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    primary: Colors.white,
+                    backgroundColor: kPrimaryColor,
                   ),
                 ),
               ],

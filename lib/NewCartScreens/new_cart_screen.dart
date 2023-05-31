@@ -1,6 +1,8 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:badges/badges.dart';
 import 'package:untitled1/main.dart';
+import '../constants.dart';
+import '../size_config.dart';
 import '/NewCartScreens/NewCartModel.dart';
 import '/NewCartScreens/NewDBHelper.dart';
 import 'package:flutter/material.dart';
@@ -28,10 +30,14 @@ class _NewCartScreenState extends State<NewCartScreen> {
 
   @override
   Widget build(BuildContext context) {
+    DBHelper db = DBHelper() ;
+
+    Future<List<Cart>> _cart = db.getCartList();
     final CartProvider cart = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shopping Cart'),
+        backgroundColor: Color(0xFFfe6796),
         centerTitle: true,
         actions: [
           Center(
@@ -352,7 +358,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                   children: [
                     ReusableWidget(
                       title: 'Total',
-                      value: r'wei' + value.getTotalPrice().toStringAsFixed(2),
+                      value:value.getTotalPrice().toStringAsFixed(2) + r' wei' ,
                     ),
                     ElevatedButton(
                         onPressed: () {
@@ -363,7 +369,17 @@ class _NewCartScreenState extends State<NewCartScreen> {
                             ),
                           );
                         },
-                        child: Text("Purchase")),
+                        style: TextButton.styleFrom(
+                          shape:
+                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                          primary: Colors.white,
+                          backgroundColor: kPrimaryColor,
+                        ),
+                        child: Text("Purchase",
+                          style: TextStyle(
+                            fontSize: getProportionateScreenWidth(18),
+                            color: Colors.white,
+                          ), )),
                   ],
                 ),
               );
