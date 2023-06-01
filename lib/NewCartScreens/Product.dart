@@ -21,10 +21,12 @@ class Product {
   String brand = '';
   String productName = '';
   int sellerID = 0;
+  int buyerID = 0;
   int productID = 0;
   String category = '';
   double price = 0;
   String img = '';
+  int amount = 0;
   late PostgreSQLConnection connection;
   List<Product> productList = [];
   List<Product> cart = [];
@@ -72,6 +74,7 @@ class Product {
       for (Cart cartItem in cartList) {
         if (p.productID == cartItem.id) {
           int quantity = cartItem.quantity ?? 0; // Convert to non-nullable int
+          amount = quantity;
           for (int i = 0; i < quantity; i++) {
             cart.add(p);
             print('Added ${p.productName}');
@@ -94,10 +97,10 @@ class Product {
           'INSERT INTO public.history (transactiondate, amount, productid, sellerid, customerid) values (@date, @amount, @pid, @sid, @cid)',
           substitutionValues: {
             'date': '2023-05-08',
-            'amount': p.productID,
+            'amount': amount,
             'pid': p.productID,
             'sid': p.sellerID,
-            'cid': p.productID,
+            'cid': p.buyerID,
           });
       sellers.add(await getSellerAddress(p.sellerID));
       productNames.add(p.productName);
