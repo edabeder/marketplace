@@ -86,7 +86,7 @@ class _SellerScreenState extends State<SellerScreen> {
           'brand': _brandController.text,
           'pname': _nameController.text,
           'sellerid': _sellerIDController.text,
-          'price': _priceController.text,
+          'productprice': _priceController.text,
           'ppicture': pickedImage.toString(),
           'category': _categoryController.text,
         },
@@ -172,20 +172,19 @@ class _SellerScreenState extends State<SellerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Seller Screen'),
-        backgroundColor: Color(0xFFfe6796),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => MyHomePage(),
+          title: Text('Seller Screen'),
+          backgroundColor: Color(0xFFfe6796),
+          actions: <Widget>[
+            IconButton(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => MyHomePage(),
+                ),
               ),
+              icon: const Icon(Icons.home),
             ),
-            icon: const Icon(Icons.home),
-          ),
-        ]
-      ),
+          ]),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -211,8 +210,8 @@ class _SellerScreenState extends State<SellerScreen> {
                       pickedImage = _pickImage(ImageSource.gallery);
                     },
                     style: TextButton.styleFrom(
-                      shape:
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                       primary: Colors.white,
                       backgroundColor: kPrimaryColor,
                     ),
@@ -223,8 +222,8 @@ class _SellerScreenState extends State<SellerScreen> {
                       pickedImage = _pickImage(ImageSource.camera);
                     },
                     style: TextButton.styleFrom(
-                      shape:
-                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20)),
                       primary: Colors.white,
                       backgroundColor: kPrimaryColor,
                     ),
@@ -282,22 +281,25 @@ class _SellerScreenState extends State<SellerScreen> {
                 ),
               ),
               ElevatedButton(
-                  child: _isLoading
-                      ? CircularProgressIndicator()
-                      : Text('Add Product',
-                    style: TextStyle(
-                      fontSize: getProportionateScreenWidth(18),
-                      color: Colors.white,),),
-                  onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      _formKey.currentState!.save();
-                      addProduct();
-                      KeyboardUtil.hideKeyboard(context);
-                    }
-                  },
+                child: _isLoading
+                    ? CircularProgressIndicator()
+                    : Text(
+                        'Add Product',
+                        style: TextStyle(
+                          fontSize: getProportionateScreenWidth(18),
+                          color: Colors.white,
+                        ),
+                      ),
+                onPressed: () {
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
+                    addProduct();
+                    KeyboardUtil.hideKeyboard(context);
+                  }
+                },
                 style: TextButton.styleFrom(
-                  shape:
-                  RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
                   primary: Colors.white,
                   backgroundColor: kPrimaryColor,
                 ),
