@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:untitled1/NewCartScreens/NewCartModel.dart';
 import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
@@ -17,7 +16,6 @@ import 'package:web3dart/web3dart.dart';
 import 'package:untitled1/NewCartScreens/Product.dart';
 import 'package:untitled1/module/PostgresDBConnector.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
-import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -40,14 +38,14 @@ class _HomeScreenState extends State<HomeScreen> {
   String networkName = '';
   late String contractAddress = '';
   String amountInput = '';
-  String customeriD = '';
+  int customerid = 0;
   late BigInt balance = BigInt.zero;
-  Product product = Product.empty();
+   Product product = Product.empty();
   late PostgreSQLConnection connection;
   bool isSeller = false;
   DBHelper? dbHelper = DBHelper();
   late List<Cart> cartList = [] ;
-
+  
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
 
@@ -62,88 +60,59 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
 // Database connection object
-  void setConnection() async
-  {
-    connection = await PostgresDBConnector().connection;
+void setConnection() async
+{
+  connection = await PostgresDBConnector().connection;
 
-    cartList = await dbHelper!.getCartList();
+  cartList = await dbHelper!.getCartList();
 
-    isSeller = Product.isSeller;
+  isSeller = Product.isSeller;
+  print('seller abisi: ' + isSeller.toString());
+  print("id geldi mi: " +  GlobalData.globalUserId);
+}
 
-    await fetchGlobalUserId();
-    print(GlobalData.globalUserId);
-    product.buyerID = int.parse(GlobalData.globalUserId);
-  }
-  Future<void> fetchGlobalUserId() async {
-    final url = Uri.parse('http://10.0.2.2:3000/api/get-global-user-id');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      Map<String, dynamic> jsonResponse = json.decode(response.body);
-      String customerId = jsonResponse['customerId']
-          .toString(); // Convert the customer ID to String
-      setState(() {
-        customeriD = customerId;
-        GlobalData.globalUserId = customerId;
-      });
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: Text('Error'),
-          content: Text('Failed to fetch global user ID. Please try again.'),
-          actions: [
-            TextButton(
-              child: Text('OK'),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-  dynamic sellerAddressHistoryQuery(int row) async
-  {
-    List<Map<String, Map<String, dynamic>>> result = await connection
-        .mappedResultsQuery('SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
-        substitutionValues: {
-          'aRow': row,
-        });
+ dynamic sellerAddressHistoryQuery(int row) async
+ {
+  List<Map<String, Map<String, dynamic>>> result = await connection
+    .mappedResultsQuery('SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
+         substitutionValues: {
+       'aRow': row,
+       });
 
 
-    if (result.length == 1) {
-      for (Map<String, Map<String, dynamic>> element in result) {
-        print(result);
-      }
-    }
-    return result;
-  }
+  if (result.length == 1) {
+     for (Map<String, Map<String, dynamic>> element in result) {
+      print(result);         
+     }
+   }
+   return result;
+ }
   dynamic buyerAddressHistoryQuery(int row) async
-  {
-    List<Map<String, Map<String, dynamic>>> result = await connection
-        .mappedResultsQuery('SELECT c.walletaddress FROM public.history h JOIN public.customer c ON h.customerid = c.id WHERE h.row = @aRow',
-        substitutionValues: {
-          'aRow': row,
-        });
+ {
+  List<Map<String, Map<String, dynamic>>> result = await connection
+    .mappedResultsQuery('SELECT c.walletaddress FROM public.history h JOIN public.customer c ON h.customerid = c.id WHERE h.row = @aRow',
+         substitutionValues: {
+       'aRow': row,
+       });
 
 
-    if (result.length == 1) {
-      for (Map<String, Map<String, dynamic>> element in result) {
-        print(result);
-      }
-    }
-    return result;
-  }
-  void saveWalletAddress(int id) async
-  {
+  if (result.length == 1) {
+     for (Map<String, Map<String, dynamic>> element in result) {
+      print(result);         
+     }
+   }
+   return result;
+ }
+ void saveWalletAddress(int id) async
+{
     List<Map<String, Map<String, dynamic>>> result = await connection
-        .mappedResultsQuery('UPDATE public.customer SET walletaddress = @aAddress WHERE id = @aID',
-        substitutionValues: {
-          'aAddress': accountAddress,
-          'aID': id,
-        });
-    print("Successfully saved address $accountAddress to customer ${id.toString()}");
-  }
+    .mappedResultsQuery('UPDATE public.customer SET walletaddress = @aAddress WHERE id = @aID',
+         substitutionValues: {
+       'aAddress': accountAddress,
+       'aID': id,
+       });
+         print("Successfully saved address $accountAddress to customer ${id.toString()}");
+}
   /*void updateGreeting() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
@@ -172,33 +141,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
   }
   void createBuyerContract() {
-
+    
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
     context.read<Web3Cubit>().createBuyerContract();
 
-  }
-  void getBuyerContract() async{
-    EthereumAddress e = await context.read<Web3Cubit>().getBuyerContract();
-    contractAddress = e.hex;
+  } 
+   void getBuyerContract() async{
+     EthereumAddress e = await context.read<Web3Cubit>().getBuyerContract();
+     contractAddress = e.hex;
   }
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     product.buyProducts();
     context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices).then((value) => cartList = []);
-
+    
   }
   void requestReturn(int row) {
-    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
-
+    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
+    
     context.read<Web3Cubit>().requestReturn(sellerAddressHistoryQuery(row), row);
   }
 
   void getBuyerContractBalance() async{
     BigInt getBalance = await context.read<Web3Cubit>().getBuyerContractBalance();
-    setState(() {
-      balance = getBalance;
-    });
+          setState(() {
+            balance = getBalance;
+      });
   }
   void scanTransaction() {
     // DB conn
@@ -218,17 +187,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
     context.read<Web3Cubit>().createSellerContract();
   }
-  void getSellerContract() async{
-    EthereumAddress e = await context.read<Web3Cubit>().getSellerContract();
-    contractAddress = e.hex;
+    void getSellerContract() async{
+         EthereumAddress e = await context.read<Web3Cubit>().getSellerContract();
+     contractAddress = e.hex;
   }
-  void returnTokensToCustomer(int row) {
+    void returnTokensToCustomer(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // DB conn
     context.read<Web3Cubit>().returnTokensToCustomer(buyerAddressHistoryQuery(row), row);
   }
-  void sendTokensToSeller(int row) {
+    void sendTokensToSeller(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // DB conn
@@ -241,23 +210,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
     /// Execute after frame is rendered to get the emit state of InitializeProviderSuccess
     WidgetsBinding.instance.addPostFrameCallback(
-          (_) => context.read<Web3Cubit>().initializeProvider(
-        connector: widget.connector,
-        session: widget.session,
-      ),
+      (_) => context.read<Web3Cubit>().initializeProvider(
+            connector: widget.connector,
+            session: widget.session,
+          ),
     );
     setConnection();
+    //saveWalletAddress(customerid);
+      Future.delayed(Duration(seconds: 1), () {
+    checkButtonStatus();
+    if(!isSeller)
+    {
+          getBuyerContractBalance();
+    }
 
-    Future.delayed(Duration(seconds: 1), () {
-      checkButtonStatus();
-      if(!isSeller)
-      {
-        saveWalletAddress(int.parse(GlobalData.globalUserId));
-        getBuyerContractBalance();
-      }
-
-
-    });
+      
+  });
   }
 
   @override
@@ -426,9 +394,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: BlocBuilder<Web3Cubit, Web3State>(
                               buildWhen:
                                   (Web3State previous, Web3State current) =>
-                              current is TransactionLoading ||
-                                  current is TransactionSuccess ||
-                                  current is TransactionFailed,
+                                      current is TransactionLoading ||
+                                      current is TransactionSuccess ||
+                                      current is TransactionFailed,
                               builder: (BuildContext context, Web3State state) {
                                 if (state is TransactionLoading) {
                                   return ElevatedButton.icon(
@@ -444,7 +412,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     label: const Text(''),
                                   );
                                 }
-                                return Column(
+                                  return Column(
                                   children: [
                                     const Text(
                                       "Connected to MetaMask successfully!",
@@ -455,128 +423,128 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                                     ),
                                     SizedBox(height: 10.0),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => CustomHomeScreen()),
-                                        );
-                                      },
-                                      style: buttonStyle,
-                                      child: const Text("Back To App"),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    showCreateContractButton
-                                        ? const Text(
-                                      "Create a contract to start shopping!",
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                      ElevatedButton(
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => CustomHomeScreen()),
+                                          );
+                                        },
+                                        style: buttonStyle,
+                                        child: const Text("Back To App"),
                                       ),
-                                    ) :  const Text(
-                                      "Your contract address: ",
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 16),
-                                    showCreateContractButton
-                                        ? ElevatedButton(
-                                      onPressed: () {
-                                        if(!isSeller)
-                                        {
-                                          createBuyerContract();
-                                          getBuyerContract();
-                                        }else{
-                                          createSellerContract();
-                                          getSellerContract();
-                                        }
+                                      const SizedBox(height: 16),
+                                  showCreateContractButton
+                                      ? const Text(
+                                          "Create a contract to start shopping!",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ) :  const Text(
+                                          "Your contract address: ",
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ), 
+                                          ), 
+                                     const SizedBox(height: 16),
+                                  showCreateContractButton
+                                      ? ElevatedButton(
+                                          onPressed: () {
+                                            if(!isSeller)
+                                            {  
+                                              //createBuyerContract();
+                                              getBuyerContract();
+                                            }else{
+                                              //createSellerContract();
+                                              getSellerContract();
+                                            }
+                                            
 
-
-                                        setState(() {
-                                          showCreateContractButton = false;
-                                        });
-                                      },
-                                      style: buttonStyle,
-                                      child: const Text("Create My Contract Now"),
-                                    )
-                                        :  Text(
-                                      contractAddress,
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-                                    ),
+                                              setState(() {
+                                                showCreateContractButton = false;
+                                              });
+                                          },
+                                          style: buttonStyle,
+                                          child: const Text("Create My Contract Now"),
+                                        )
+                                      :  Text(
+                                          contractAddress,
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                     const SizedBox(height: 16),
                                     showCreateContractButton || isSeller
-                                        ? SizedBox(height: 1)
-                                        : TextField(
-                                      onChanged: (value) {
-                                        setState(() {
-                                          amountInput = value;
-                                        });
-                                      },
-                                      decoration: InputDecoration(
-                                        hintText: 'Enter an amount (in wei)',
+                                      ? SizedBox(height: 1) 
+                                      : TextField(
+                                        onChanged: (value) {
+                                          setState(() {
+                                            amountInput = value;
+                                          });
+                                        },
+                                        decoration: InputDecoration(
+                                          hintText: 'Enter an amount (in wei)',
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 16),
+                                        const SizedBox(height: 16),
                                     showCreateContractButton
-                                        ? SizedBox(height: 1)
-                                        : ElevatedButton(
-                                      onPressed: () {
-                                        if(!isSeller)
-                                        {
-                                          try {
-                                            int inputValue = int.parse(amountInput);
-                                            loadToBuyerContract(inputValue);
-                                            print("Loaded: " + amountInput);
-                                            getBuyerContractBalance();
-                                          } catch (e) {
-                                            print(e);
-                                            // Display an error message to the user
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('Error: Invalid input.'),
-                                              ),
-                                            );
-                                          }
+                                      ? SizedBox(height: 1) 
+                                      : ElevatedButton(
+                                          onPressed: () {
+                                            if(!isSeller)
+                                            {                                      
+                                              try {
+                                              int inputValue = int.parse(amountInput);
+                                              loadToBuyerContract(inputValue);
+                                              print("Loaded: " + amountInput);
+                                              getBuyerContractBalance();
+                                            } catch (e) {
+                                              print(e);
+                                              // Display an error message to the user
+                                              ScaffoldMessenger.of(context).showSnackBar(
+                                                SnackBar(
+                                                  content: Text('Error: Invalid input.'),
+                                                ),
+                                              );  
+                                        }
                                         }else{
                                           //sendTokensToSeller();
                                         }
 
                                       },
-                                      style: buttonStyle,
-                                      child: !isSeller? const Text("Load To My Contract") :const Text("Load To My Account"),
-                                    ),
+                                          style: buttonStyle,
+                                          child: !isSeller? const Text("Load To My Contract") :const Text("Load To My Account"),
+                                        ),
                                     const SizedBox(height: 16),
-                                    showCreateContractButton
-                                        ? SizedBox(height: 1)
-                                        :  Text(
-                                      "Balance: " + balance.toString(),
-                                      style: TextStyle(
-                                        fontSize: 16.0,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.white,
-                                      ),
-
-                                    ),
-                                    const SizedBox(height: 16),
+                                    showCreateContractButton 
+                                      ? SizedBox(height: 1) 
+                                      :  Text(
+                                          "Balance: " + balance.toString(),
+                                          style: TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ), 
+                                          
+                                      ),  
+                                      const SizedBox(height: 16),
                                     showCreateContractButton && !isSeller
-                                        ? SizedBox(height: 1)
-                                        : ElevatedButton(
-                                      onPressed: cartList.isEmpty ? null : () {
-                                        payShopping();
+                                      ? SizedBox(height: 1) 
+                                      : ElevatedButton(
+                                          onPressed: cartList.isEmpty ? null : () {
+                                            payShopping();
                                       },
-                                      style: buttonStyle,
-                                      child: const Text("Purchase Cart"),
-                                    ),
-                                  ],
-                                );
+                                          style: buttonStyle,
+                                          child: const Text("Purchase Cart"),
+                                        ),                                      
+                                    ],
+                                  );
                               },
                             ),
                           ),
@@ -587,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 Container(
                   padding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(10),
