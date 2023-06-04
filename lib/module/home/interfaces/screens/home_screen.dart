@@ -40,12 +40,12 @@ class _HomeScreenState extends State<HomeScreen> {
   String amountInput = '';
   int customerid = 0;
   late BigInt balance = BigInt.zero;
-   Product product = Product.empty();
+  Product product = Product.empty();
   late PostgreSQLConnection connection;
   bool isSeller = false;
   DBHelper? dbHelper = DBHelper();
-  late List<Cart> cartList = [] ;
-  
+  late List<Cart> cartList = [];
+
   TextEditingController greetingTextController = TextEditingController();
   bool showCreateContractButton = false;
 
@@ -60,59 +60,62 @@ class _HomeScreenState extends State<HomeScreen> {
   );
 
 // Database connection object
-void setConnection() async
-{
-  connection = await PostgresDBConnector().connection;
+  void setConnection() async {
+    connection = await PostgresDBConnector().connection;
 
-  cartList = await dbHelper!.getCartList();
+    cartList = await dbHelper!.getCartList();
 
-  isSeller = Product.isSeller;
-  print('seller abisi: ' + isSeller.toString());
-  print("id geldi mi: " +  GlobalData.globalUserId);
-}
+    isSeller = Product.isSeller;
+    print('seller abisi: ' + isSeller.toString());
+    print("id geldi mi: " + GlobalData.globalUserId);
+  }
 
- dynamic sellerAddressHistoryQuery(int row) async
- {
-  List<Map<String, Map<String, dynamic>>> result = await connection
-    .mappedResultsQuery('SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
-         substitutionValues: {
-       'aRow': row,
-       });
+  dynamic sellerAddressHistoryQuery(int row) async {
+    List<
+        Map<String,
+            Map<String, dynamic>>> result = await connection.mappedResultsQuery(
+        'SELECT s.walletaddress FROM public.history h JOIN public.seller s ON h.sellerid = s.id WHERE h.row = @aRow',
+        substitutionValues: {
+          'aRow': row,
+        });
 
+    if (result.length == 1) {
+      for (Map<String, Map<String, dynamic>> element in result) {
+        print(result);
+      }
+    }
+    return result;
+  }
 
-  if (result.length == 1) {
-     for (Map<String, Map<String, dynamic>> element in result) {
-      print(result);         
-     }
-   }
-   return result;
- }
-  dynamic buyerAddressHistoryQuery(int row) async
- {
-  List<Map<String, Map<String, dynamic>>> result = await connection
-    .mappedResultsQuery('SELECT c.walletaddress FROM public.history h JOIN public.customer c ON h.customerid = c.id WHERE h.row = @aRow',
-         substitutionValues: {
-       'aRow': row,
-       });
+  dynamic buyerAddressHistoryQuery(int row) async {
+    List<
+        Map<String,
+            Map<String, dynamic>>> result = await connection.mappedResultsQuery(
+        'SELECT c.walletaddress FROM public.history h JOIN public.customer c ON h.customerid = c.id WHERE h.row = @aRow',
+        substitutionValues: {
+          'aRow': row,
+        });
 
+    if (result.length == 1) {
+      for (Map<String, Map<String, dynamic>> element in result) {
+        print(result);
+      }
+    }
+    return result;
+  }
 
-  if (result.length == 1) {
-     for (Map<String, Map<String, dynamic>> element in result) {
-      print(result);         
-     }
-   }
-   return result;
- }
- void saveWalletAddress(int id) async
-{
-    List<Map<String, Map<String, dynamic>>> result = await connection
-    .mappedResultsQuery('UPDATE public.customer SET walletaddress = @aAddress WHERE id = @aID',
-         substitutionValues: {
-       'aAddress': accountAddress,
-       'aID': id,
-       });
-         print("Successfully saved address $accountAddress to customer ${id.toString()}");
-}
+  void saveWalletAddress(int id) async {
+    List<
+        Map<String,
+            Map<String, dynamic>>> result = await connection.mappedResultsQuery(
+        'UPDATE public.customer SET walletaddress = @aAddress WHERE id = @aID',
+        substitutionValues: {
+          'aAddress': accountAddress,
+          'aID': id,
+        });
+    print(
+        "Successfully saved address $accountAddress to customer ${id.toString()}");
+  }
   /*void updateGreeting() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
@@ -121,87 +124,103 @@ void setConnection() async
   }*/
 
   // BUYER FUNCTIONS
-  void checkButtonStatus() async
-  {
-    EthereumAddress responseAddress = await context.read<Web3Cubit>().getBuyerContract();
+  void checkButtonStatus() async {
+    EthereumAddress responseAddress =
+        await context.read<Web3Cubit>().getBuyerContract();
 
-    if (responseAddress == EthereumAddress.fromHex('0x0000000000000000000000000000000000000000')) {
+    if (responseAddress ==
+        EthereumAddress.fromHex('0x0000000000000000000000000000000000000000')) {
       setState(() {
         showCreateContractButton = true;
         contractAddress = responseAddress.hex;
       });
       print("no contract address");
-    }else {
+    } else {
       setState(() {
         showCreateContractButton = false;
         contractAddress = responseAddress.hex;
       });
       print("contract address exists" + contractAddress);
     }
-
   }
+
   void createBuyerContract() {
-    
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
     context.read<Web3Cubit>().createBuyerContract();
-
-  } 
-   void getBuyerContract() async{
-     EthereumAddress e = await context.read<Web3Cubit>().getBuyerContract();
-     contractAddress = e.hex;
   }
+
+  void getBuyerContract() async {
+    EthereumAddress e = await context.read<Web3Cubit>().getBuyerContract();
+    contractAddress = e.hex;
+  }
+
   void payShopping() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     product.buyProducts();
-    context.read<Web3Cubit>().payShopping(product.sellers, product.productNames, product.prices).then((value) => cartList = []);
-    
-  }
-  void requestReturn(int row) {
-    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);  
-    
-    context.read<Web3Cubit>().requestReturn(sellerAddressHistoryQuery(row), row);
+    context
+        .read<Web3Cubit>()
+        .payShopping(product.sellers, product.productNames, product.prices)
+        .then((value) => cartList = []);
   }
 
-  void getBuyerContractBalance() async{
-    BigInt getBalance = await context.read<Web3Cubit>().getBuyerContractBalance();
-          setState(() {
-            balance = getBalance;
-      });
+  void requestReturn(int row) {
+    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
+
+    context
+        .read<Web3Cubit>()
+        .requestReturn(sellerAddressHistoryQuery(row), row);
   }
+
+  void getBuyerContractBalance() async {
+    BigInt getBalance =
+        await context.read<Web3Cubit>().getBuyerContractBalance();
+    setState(() {
+      balance = getBalance;
+    });
+  }
+
   void scanTransaction() {
     // DB conn
     context.read<Web3Cubit>().scanTransaction(0);
   }
-  void loadToBuyerContract(int input)
-  {
+
+  void loadToBuyerContract(int input) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // get input for amount
     EtherAmount amount = EtherAmount.inWei(BigInt.from(input));
     context.read<Web3Cubit>().loadToBuyerContract(amount);
   }
+
   // SELLER FUNCTIONS
   void createSellerContract() {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     context.read<Web3Cubit>().createSellerContract();
   }
-    void getSellerContract() async{
-         EthereumAddress e = await context.read<Web3Cubit>().getSellerContract();
-     contractAddress = e.hex;
+
+  void getSellerContract() async {
+    EthereumAddress e = await context.read<Web3Cubit>().getSellerContract();
+    contractAddress = e.hex;
   }
-    void returnTokensToCustomer(int row) {
+
+  void returnTokensToCustomer(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // DB conn
-    context.read<Web3Cubit>().returnTokensToCustomer(buyerAddressHistoryQuery(row), row);
+    context
+        .read<Web3Cubit>()
+        .returnTokensToCustomer(buyerAddressHistoryQuery(row), row);
   }
-    void sendTokensToSeller(int row) {
+
+  void sendTokensToSeller(int row) {
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
     // DB conn
-    context.read<Web3Cubit>().sendTokensToSeller(buyerAddressHistoryQuery(row), row);
+    context
+        .read<Web3Cubit>()
+        .sendTokensToSeller(buyerAddressHistoryQuery(row), row);
   }
 
   @override
@@ -217,15 +236,12 @@ void setConnection() async
     );
     setConnection();
     //saveWalletAddress(customerid);
-      Future.delayed(Duration(seconds: 1), () {
-    checkButtonStatus();
-    if(!isSeller)
-    {
-          getBuyerContractBalance();
-    }
-
-      
-  });
+    Future.delayed(Duration(seconds: 1), () {
+      checkButtonStatus();
+      if (!isSeller) {
+        getBuyerContractBalance();
+      }
+    });
   }
 
   @override
@@ -412,7 +428,7 @@ void setConnection() async
                                     label: const Text(''),
                                   );
                                 }
-                                  return Column(
+                                return Column(
                                   children: [
                                     const Text(
                                       "Connected to MetaMask successfully!",
@@ -423,128 +439,140 @@ void setConnection() async
                                       ),
                                     ),
                                     SizedBox(height: 10.0),
-                                      ElevatedButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => CustomHomeScreen()),
-                                          );
-                                        },
-                                        style: buttonStyle,
-                                        child: const Text("Back To App"),
-                                      ),
-                                      const SizedBox(height: 16),
-                                  showCreateContractButton
-                                      ? const Text(
-                                          "Create a contract to start shopping!",
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  CustomHomeScreen()),
+                                        );
+                                      },
+                                      style: buttonStyle,
+                                      child: const Text("Back To App"),
+                                    ),
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton
+                                        ? const Text(
+                                            "Create a contract to start shopping!",
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          )
+                                        : const Text(
+                                            "Your contract address: ",
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ) :  const Text(
-                                          "Your contract address: ",
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ), 
-                                          ), 
-                                     const SizedBox(height: 16),
-                                  showCreateContractButton
-                                      ? ElevatedButton(
-                                          onPressed: () {
-                                            if(!isSeller)
-                                            {  
-                                              //createBuyerContract();
-                                              getBuyerContract();
-                                            }else{
-                                              //createSellerContract();
-                                              getSellerContract();
-                                            }
-                                            
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton
+                                        ? ElevatedButton(
+                                            onPressed: () {
+                                              if (!isSeller) {
+                                                //createBuyerContract();
+                                                getBuyerContract();
+                                              } else {
+                                                //createSellerContract();
+                                                getSellerContract();
+                                              }
 
                                               setState(() {
-                                                showCreateContractButton = false;
+                                                showCreateContractButton =
+                                                    false;
                                               });
-                                          },
-                                          style: buttonStyle,
-                                          child: const Text("Create My Contract Now"),
-                                        )
-                                      :  Text(
-                                          contractAddress,
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
+                                            },
+                                            style: buttonStyle,
+                                            child: const Text(
+                                                "Create My Contract Now"),
+                                          )
+                                        : Text(
+                                            contractAddress,
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                        ),
                                     const SizedBox(height: 16),
                                     showCreateContractButton || isSeller
-                                      ? SizedBox(height: 1) 
-                                      : TextField(
-                                        onChanged: (value) {
-                                          setState(() {
-                                            amountInput = value;
-                                          });
-                                        },
-                                        decoration: InputDecoration(
-                                          hintText: 'Enter an amount (in wei)',
-                                        ),
-                                      ),
-                                        const SizedBox(height: 16),
-                                    showCreateContractButton
-                                      ? SizedBox(height: 1) 
-                                      : ElevatedButton(
-                                          onPressed: () {
-                                            if(!isSeller)
-                                            {                                      
-                                              try {
-                                              int inputValue = int.parse(amountInput);
-                                              loadToBuyerContract(inputValue);
-                                              print("Loaded: " + amountInput);
-                                              getBuyerContractBalance();
-                                            } catch (e) {
-                                              print(e);
-                                              // Display an error message to the user
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text('Error: Invalid input.'),
-                                                ),
-                                              );  
-                                        }
-                                        }else{
-                                          //sendTokensToSeller();
-                                        }
-
-                                      },
-                                          style: buttonStyle,
-                                          child: !isSeller? const Text("Load To My Contract") :const Text("Load To My Account"),
-                                        ),
+                                        ? SizedBox(height: 1)
+                                        : TextField(
+                                            onChanged: (value) {
+                                              setState(() {
+                                                amountInput = value;
+                                              });
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText:
+                                                  'Enter an amount (in wei)',
+                                            ),
+                                          ),
                                     const SizedBox(height: 16),
-                                    showCreateContractButton 
-                                      ? SizedBox(height: 1) 
-                                      :  Text(
-                                          "Balance: " + balance.toString(),
-                                          style: TextStyle(
-                                            fontSize: 16.0,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white,
-                                          ), 
-                                          
-                                      ),  
-                                      const SizedBox(height: 16),
+                                    showCreateContractButton
+                                        ? SizedBox(height: 1)
+                                        : ElevatedButton(
+                                            onPressed: () {
+                                              if (!isSeller) {
+                                                try {
+                                                  int inputValue =
+                                                      int.parse(amountInput);
+                                                  loadToBuyerContract(
+                                                      inputValue);
+                                                  print(
+                                                      "Loaded: " + amountInput);
+                                                  getBuyerContractBalance();
+                                                } catch (e) {
+                                                  print(e);
+                                                  // Display an error message to the user
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                          'Error: Invalid input.'),
+                                                    ),
+                                                  );
+                                                }
+                                              } else {
+                                                //sendTokensToSeller();
+                                              }
+                                            },
+                                            style: buttonStyle,
+                                            child: !isSeller
+                                                ? const Text(
+                                                    "Load To My Contract")
+                                                : const Text(
+                                                    "Load To My Account"),
+                                          ),
+                                    const SizedBox(height: 16),
+                                    showCreateContractButton
+                                        ? SizedBox(height: 1)
+                                        : Text(
+                                            "Balance: " + balance.toString(),
+                                            style: TextStyle(
+                                              fontSize: 16.0,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                    const SizedBox(height: 16),
                                     showCreateContractButton && !isSeller
-                                      ? SizedBox(height: 1) 
-                                      : ElevatedButton(
-                                          onPressed: cartList.isEmpty ? null : () {
-                                            payShopping();
-                                      },
-                                          style: buttonStyle,
-                                          child: const Text("Purchase Cart"),
-                                        ),                                      
-                                    ],
-                                  );
+                                        ? SizedBox(height: 1)
+                                        : ElevatedButton(
+                                            onPressed: cartList.isEmpty
+                                                ? null
+                                                : () {
+                                                    payShopping();
+                                                  },
+                                            style: buttonStyle,
+                                            child: const Text("Purchase Cart"),
+                                          ),
+                                  ],
+                                );
                               },
                             ),
                           ),
