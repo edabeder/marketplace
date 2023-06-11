@@ -86,13 +86,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.only(bottom: height * 0.4),
-                  child: Text(
-                    'Ethereum Wallet',
-                    style: theme.textTheme.displaySmall,
-                  ),
+                Text(
+                  'Ethereum Wallet',
+                  style: theme.textTheme.displaySmall,
                 ),
+                SizedBox( child: Image.asset('assets/images/newlogo.png'),),
                 Container(
                   padding: EdgeInsets.symmetric(
                     horizontal: width * 0.2,
@@ -141,7 +139,18 @@ class _AuthenticationScreenState extends State<AuthenticationScreen> {
                               onPressed: () {
                                 Navigator.pop(context);
                               },
-                              child: Text("aa"))
+                              child: Text("Back to shopping", style: theme.textTheme.titleMedium),
+                            style: ButtonStyle(
+                              elevation: MaterialStateProperty.all(0),
+                              backgroundColor: MaterialStateProperty.all(
+                                  Colors.white.withAlpha(60),
+                              ),
+                              shape: MaterialStateProperty.all(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                              ),
+                            ),)
                         ],
                       ),
                     ],

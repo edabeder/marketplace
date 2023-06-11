@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import '/constants.dart';
 import '/screens/sign_in/sign_in_screen.dart';
 import '/size_config.dart';
-
-// This is the best practice
 import '../components/splash_content.dart';
 
 class Body extends StatefulWidget {
@@ -19,15 +17,6 @@ class _BodyState extends State<Body> {
     {
       'text': '',
       'image': 'assets/images/splash_1.png'
-    },
-    {
-      'text':
-          '',
-      'image': 'assets/images/splash_2.png'
-    },
-    {
-      'text': '',
-      'image': 'assets/images/splash_3.png'
     },
   ];
   @override
@@ -48,7 +37,6 @@ class _BodyState extends State<Body> {
                 itemCount: splashData.length,
                 itemBuilder: (BuildContext context, int index) => SplashContent(
                   image: splashData[index]['image'],
-                  text: splashData[index]['text'],
                 ),
               ),
             ),
@@ -68,14 +56,21 @@ class _BodyState extends State<Body> {
                       ),
                     ),
                     const Spacer(flex: 3),
-                    ElevatedButton(
-                      child: const Text('Open route'),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (BuildContext context) => const SignInScreen()),
-                        );
-                      },
+                    SizedBox(
+                      width: double.infinity,
+                      height: getProportionateScreenHeight(56),
+                      child: ElevatedButton(
+                        child: Text('Get Started' , style: TextStyle(fontSize: getProportionateScreenWidth(20),),),
+                        style: TextButton.styleFrom(
+                      shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (BuildContext context) => const SignInScreen()),
+                          );
+                        },
+                      ),
                     ),
                     const Spacer(),
                   ],

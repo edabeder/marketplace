@@ -134,15 +134,25 @@ class _SignFormState extends State<SignForm> {
           ),
           FormError(errors: errors),
           SizedBox(height: getProportionateScreenHeight(20)),
-          ElevatedButton(
-            child: const Text('Continue'),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                loginUser(email!, password!);
-                KeyboardUtil.hideKeyboard(context);
-              }
-            },
+          SizedBox(
+            width: double.infinity,
+            height: getProportionateScreenHeight(56),
+            child: ElevatedButton(
+              child: Text('Continue', style: TextStyle(fontSize: getProportionateScreenWidth(20)),),
+              style: TextButton.styleFrom(
+                shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                primary: Colors.white,
+                backgroundColor: kPrimaryColor,
+              ),
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  loginUser(email!, password!);
+                  KeyboardUtil.hideKeyboard(context);
+                }
+              },
+            ),
           ),
         ],
       ),

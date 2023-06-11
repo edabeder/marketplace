@@ -1,5 +1,6 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:badges/badges.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:untitled1/main.dart';
 import '../constants.dart';
 import '../size_config.dart';
@@ -30,13 +31,14 @@ class _NewCartScreenState extends State<NewCartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    DBHelper db = DBHelper() ;
+    DBHelper db = DBHelper();
 
     Future<List<Cart>> _cart = db.getCartList();
     final CartProvider cart = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Shopping Cart'),
+        title:  Text('Shopping Cart', style: TextStyle(fontSize: getProportionateScreenWidth(20),
+          fontWeight: FontWeight.w500,),) ,
         backgroundColor: Color(0xFFfe6796),
         centerTitle: true,
         actions: [
@@ -171,11 +173,10 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                       height: 35,
                                                       width: 100,
                                                       decoration: BoxDecoration(
-                                                          color: Colors
-                                                              .orange.shade300,
+                                                          color: Color(0xFFFF7643),
                                                           borderRadius:
                                                               BorderRadius
-                                                                  .circular(5)),
+                                                                  .circular(20)),
                                                       child: Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -354,33 +355,81 @@ class _NewCartScreenState extends State<NewCartScreen> {
                 visible: value.getTotalPrice().toStringAsFixed(2) == '0.00'
                     ? false
                     : true,
-                child: Column(
-                  children: [
-                    ReusableWidget(
-                      title: 'Total',
-                      value:value.getTotalPrice().toStringAsFixed(2) + r' wei' ,
+
+                child: Container(
+                  padding: EdgeInsets.symmetric(
+                    vertical: getProportionateScreenWidth(15),
+                    horizontal: getProportionateScreenWidth(30),
+                  ),
+                  // height: 174,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
                     ),
-                    ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => MyHomePage(),
+                    boxShadow: [
+                      BoxShadow(
+                        offset: const Offset(0, -15),
+                        blurRadius: 20,
+                        color: const Color(0xFFDADADA).withOpacity(0.15),
+                      )
+                    ],
+                  ),
+                  child: SafeArea(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(10),
+                              height: getProportionateScreenWidth(40),
+                              width: getProportionateScreenWidth(40),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF5F6F9),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: SvgPicture.asset('assets/icons/receipt.svg'),
                             ),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          shape:
-                          RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                          primary: Colors.white,
-                          backgroundColor: kPrimaryColor,
+                            ReusableWidget(
+                              title: 'Total: ',
+                              value: value.getTotalPrice().toStringAsFixed(2) + r' Wei',
+                            ),
+                          ],
                         ),
-                        child: Text("Purchase",
-                          style: TextStyle(
-                            fontSize: getProportionateScreenWidth(18),
-                            color: Colors.white,
-                          ), )),
-                  ],
+                        SizedBox(height: 10),
+                        SizedBox(
+                          width: double.infinity,
+                          height: getProportionateScreenHeight(56),
+                          child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyHomePage(),
+                                  ),
+                                );
+                              },
+                              style: TextButton.styleFrom(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(20)),
+                                primary: Colors.white,
+                                backgroundColor: kPrimaryColor,
+                              ),
+                              child: Text(
+                                "Purchase",
+                                style: TextStyle(
+                                  fontSize: getProportionateScreenWidth(18),
+                                  color: Colors.white,
+                                ),
+                              )),
+                        ),
+
+                      ],
+                    ),
+                  ),
                 ),
               );
             })
@@ -399,17 +448,25 @@ class ReusableWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
+      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(
             title,
-            style: Theme.of(context).textTheme.titleSmall,
+            style: TextStyle(
+              fontSize: getProportionateScreenWidth(18),
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
           ),
           Text(
             value.toString(),
-            style: Theme.of(context).textTheme.titleSmall,
+            style: TextStyle(
+              fontSize: getProportionateScreenWidth(18),
+              fontWeight: FontWeight.w400,
+              color: Colors.black,
+            ),
           )
         ],
       ),

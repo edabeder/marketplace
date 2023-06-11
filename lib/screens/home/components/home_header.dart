@@ -25,26 +25,8 @@ class HomeHeader extends StatelessWidget {
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          const SearchField(),
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) => const CartScreen()),
-            ),
-            icon: const Icon(Icons.shopping_cart),
-          ),
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (BuildContext context) => MyHomePage(),
-              ),
-            ),
-            icon: const Icon(Icons.home),
-          ),
           IconButton(
             onPressed: () => Navigator.push(
               context,
@@ -54,6 +36,26 @@ class HomeHeader extends StatelessWidget {
             ),
             icon: const Icon(Icons.arrow_back_rounded),
           ),
+          const SearchField(),
+          // IconButton(
+          //   onPressed: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //         builder: (BuildContext context) => const CartScreen()),
+          //   ),
+          //   icon: const Icon(Icons.shopping_cart),
+          // ),
+          // IconButton(
+          //   onPressed: () => Navigator.push(
+          //     context,
+          //     MaterialPageRoute(
+          //       builder: (BuildContext context) => MyHomePage(),
+          //     ),
+          //   ),
+          //   icon: const Icon(Icons.home),
+          // ),
+          SizedBox(width: 30,),
+
           InkWell(
             onTap: (){
               Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) => const NewCartScreen()));

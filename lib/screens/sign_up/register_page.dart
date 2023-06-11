@@ -125,7 +125,15 @@ class _AddUserScreenState extends State<AddUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add User'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back ),
+          onPressed: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(builder: (BuildContext context) => SignInScreen(),),);
+          },
+        ),
+        title: Text('Add User', style: TextStyle(fontSize: getProportionateScreenWidth(20))),
         backgroundColor: Color(0xFFfe6796),
       ),
       body: Padding(
@@ -224,48 +232,62 @@ class _AddUserScreenState extends State<AddUserScreen> {
                   },
                 ),
                 SizedBox(
-                  height: 16.0,
+                  height: 10.0,
                 ),
-                ElevatedButton(
-                  onPressed: () {
-                    _submitForm();
-                  },
-                  style: TextButton.styleFrom(
-                    shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    primary: Colors.white,
-                    backgroundColor: kPrimaryColor,
+                SizedBox(
+                  width: double.infinity,
+                  height: getProportionateScreenHeight(56),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      _submitForm();
+                    },
+                    style: TextButton.styleFrom(
+                      shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      primary: Colors.white,
+                      backgroundColor: kPrimaryColor,
+                    ),
+                    child: Text('Add User' ,  style: TextStyle(fontSize: getProportionateScreenHeight(20),
+                        color: Colors.white)),
                   ),
-                  child: Text('Add User Deneme' ,  style: TextStyle(fontSize: getProportionateScreenHeight(18),
+                ),
+                SizedBox(height: 20,),
+                SizedBox(
+                  width: double.infinity,
+                  height: getProportionateScreenHeight(56),
+                  child: ElevatedButton(
+                    child:  Text('Home screen' ,  style: TextStyle(fontSize: getProportionateScreenHeight(20),
+                        color: Colors.white)),
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CustomHomeScreen()),
+                    ),
+                    style: TextButton.styleFrom(
+                      shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      primary: Colors.white,
+                      backgroundColor: kPrimaryColor,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 20,),
+                SizedBox(
+                  width: double.infinity,
+                  height: getProportionateScreenHeight(56),
+                  child: ElevatedButton(
+                    child: Text('Seller Screen',  style: TextStyle(fontSize: getProportionateScreenHeight(20),
                       color: Colors.white)),
-                ),
-                ElevatedButton(
-                  child:  Text('Home screen' ,  style: TextStyle(fontSize: getProportionateScreenHeight(18),
-                      color: Colors.white)),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CustomHomeScreen()),
-                  ),
-                  style: TextButton.styleFrom(
-                    shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    primary: Colors.white,
-                    backgroundColor: kPrimaryColor,
-                  ),
-                ),
-                ElevatedButton(
-                  child: Text('Seller Screen',  style: TextStyle(fontSize: getProportionateScreenHeight(18),
-                    color: Colors.white)),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (BuildContext context) => SellerScreen()),
-                  ),
-                  style: TextButton.styleFrom(
-                    shape:
-                    RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                    primary: Colors.white,
-                    backgroundColor: kPrimaryColor,
+                    onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => SellerScreen()),
+                    ),
+                    style: TextButton.styleFrom(
+                      shape:
+                      RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                      primary: Colors.white,
+                      backgroundColor: kPrimaryColor,
+                    ),
                   ),
                 ),
               ],
