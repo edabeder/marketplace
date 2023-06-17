@@ -1,6 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:untitled1/module/auth/interfaces/screens/authentication_screen.dart';
+import 'package:untitled1/screens/profile/new_auth_screen.dart';
+import 'package:untitled1/screens/profile/return_product.dart';
 
 class Order {
   final DateTime transactionDate;
@@ -125,11 +128,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
 
           return ListTile(
             title: Text('Amount: ${order.amount}'),
-            subtitle:
-                Text('Transaction Date: ${order.transactionDate.toString()}'),
+            subtitle: Text('Transaction Date: ${order.transactionDate.toString()}'),
+            trailing: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) =>  NewAuthenticationScreen()),
+                );
+
+
+              },
+              child: Text('Return'),
+            ),
           );
         },
       ),
+
     );
   }
 }
