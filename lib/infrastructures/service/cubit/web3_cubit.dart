@@ -178,7 +178,7 @@ Future<dynamic> scanTransaction(int index) async {
     return '';
   }
 }
-Future<void> payShopping(sellers, info, prices) async {
+Future<void> payShopping(EthereumAddress seller, String info, BigInt price) async {
     emit(TransactionLoading());
     try {
       String txnHash = await web3Client.sendTransaction(
@@ -187,7 +187,7 @@ Future<void> payShopping(sellers, info, prices) async {
           contract: customerContract,
           function: customerContract.function(paymentFunction),
           from: EthereumAddress.fromHex(sender),
-          parameters: <dynamic>[EthereumAddress.fromHex(sender), sellers, info, prices],
+          parameters: <dynamic>[EthereumAddress.fromHex(sender), seller , info, price],
         ),
         chainId: sessionStatus.chainId,
       );

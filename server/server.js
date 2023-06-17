@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const pg = require('pg');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const session = require('express-session');
 
 const app = express();
@@ -21,8 +21,8 @@ const config = {
 user: 'postgres',
 host: 'localhost',
 database: 'GeekchainDB',
-password: 'gizem',
-port: 5433, // default Postgres port
+password: '1234',
+port: 5432, // default Postgres port
 }
 
 // PostgreSQL veritabanına bağlan

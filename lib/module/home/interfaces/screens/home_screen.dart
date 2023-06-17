@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:untitled1/NewCartScreens/NewCartModel.dart';
 import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
@@ -16,6 +17,7 @@ import 'package:web3dart/web3dart.dart';
 import 'package:untitled1/NewCartScreens/Product.dart';
 import 'package:untitled1/module/PostgresDBConnector.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
+import 'package:http/http.dart' as http;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({
@@ -38,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String networkName = '';
   late String contractAddress = '';
   String amountInput = '';
-  int customerid = 0;
+  String userId = '';
   late BigInt balance = BigInt.zero;
   Product product = Product.empty();
   late PostgreSQLConnection connection;
@@ -66,10 +68,22 @@ class _HomeScreenState extends State<HomeScreen> {
     cartList = await dbHelper!.getCartList();
 
     isSeller = Product.isSeller;
-    print('seller abisi: ' + isSeller.toString());
-    print("id geldi mi: " + GlobalData.globalUserId);
+    await fetchGlobalUserId();
   }
+ Future<void> fetchGlobalUserId() async {
+    final url = Uri.parse('http://10.0.2.2:3000/api/get-global-user-id');
+    final response = await http.get(url);
 
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonResponse = json.decode(response.body);
+      String customerId = jsonResponse['customerId']
+          .toString(); // Convert the customer ID to String
+
+        userId = customerId;
+        GlobalData.globalUserId = customerId;
+
+    } 
+  }
   dynamic sellerAddressHistoryQuery(int row) async {
     List<
         Map<String,
@@ -154,13 +168,13 @@ class _HomeScreenState extends State<HomeScreen> {
     contractAddress = e.hex;
   }
 
-  void payShopping() {
+  void payShopping() async{
     launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
-
-    product.buyProducts();
-    context
+    await product.buyProducts(); 
+    await context
         .read<Web3Cubit>()
-        .payShopping(product.sellers, product.productNames, product.prices)
+        .payShopping(EthereumAddress.fromHex("0x3F3f8C25cff70508A7F48Da0EB7EECa38330C5ad"), "hello", 
+        BigInt.from(20))
         .then((value) => cartList = []);
   }
 
@@ -234,9 +248,10 @@ class _HomeScreenState extends State<HomeScreen> {
             session: widget.session,
           ),
     );
-    setConnection();
-    //saveWalletAddress(customerid);
+ 
     Future.delayed(Duration(seconds: 1), () {
+    setConnection();
+    saveWalletAddress(int.parse(GlobalData.globalUserId));
       checkButtonStatus();
       if (!isSeller) {
         getBuyerContractBalance();
@@ -474,10 +489,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         ? ElevatedButton(
                                             onPressed: () {
                                               if (!isSeller) {
-                                                //createBuyerContract();
+                                                createBuyerContract();
                                                 getBuyerContract();
                                               } else {
-                                                //createSellerContract();
+                                                createSellerContract();
                                                 getSellerContract();
                                               }
 
@@ -560,7 +575,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                     const SizedBox(height: 16),
-                                    showCreateContractButton && !isSeller
+                                    showCreateContractButton || isSeller
                                         ? SizedBox(height: 1)
                                         : ElevatedButton(
                                             onPressed: cartList.isEmpty
