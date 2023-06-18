@@ -62,8 +62,11 @@ class _BodyState extends State<Body> {
                       child: ElevatedButton(
                         child: Text('Get Started' , style: TextStyle(fontSize: getProportionateScreenWidth(20),),),
                         style: TextButton.styleFrom(
+                            backgroundColor: Color(0xFFfe6796),
                       shape:
                       RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+
+
                         onPressed: () {
                           Navigator.push(
                             context,
