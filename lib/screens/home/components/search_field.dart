@@ -68,6 +68,7 @@ class SearchResultScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Search Results'),
+        backgroundColor: Color(0xFFfe6796),
       ),
       body: SizedBox(
         height: 500,
@@ -91,7 +92,7 @@ class SearchResultScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(brand ?? 'Unknown'),
-                          Text('Price: \$${productPrice.toString()}'),
+                          Text('Price:  ${productPrice.toString()} \Wei'),
                         ],
                       ),
                       leading: productImage != null
