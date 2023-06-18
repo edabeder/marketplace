@@ -261,6 +261,32 @@ Future<void> requestReturn(String seller, int index) async {
       emit(TransactionFailed(errorCode: '', message: e.toString()));
     }
   }
+   Future<void> returnBackToCustomer() async {
+    emit(TransactionLoading());
+    try {
+      String txnHash = await web3Client.sendTransaction(
+        wcCredentials, Transaction(
+          from: EthereumAddress.fromHex(sender),
+          to: await getBuyerContract(),
+          value: EtherAmount.inWei(BigInt.from(20))
+        ),
+        chainId: sessionStatus.chainId,
+      );
+
+      late Timer txnTimer;
+      txnTimer = Timer.periodic(
+          Duration(milliseconds: getBlockTime(sessionStatus.chainId)),
+          (_) async {
+        TransactionReceipt? t = await web3Client.getTransactionReceipt(txnHash);
+        if (t != null) {
+          emit(const TransactionSuccess());
+          txnTimer.cancel();
+        }
+      });
+    } catch (e) {
+      emit(TransactionFailed(errorCode: '', message: e.toString()));
+    }
+  }
   /// SELLER FUNCTIONS
   Future<void> createSellerContract() async {
     emit(TransactionLoading());

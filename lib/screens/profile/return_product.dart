@@ -241,7 +241,14 @@ class _ReturnScreenState extends State<ReturnScreen> {
         .read<Web3Cubit>()
         .sendTokensToSeller(buyerAddressHistoryQuery(row), row);
   }
+  void returnToBuyer() {
+    launchUrlString(widget.uri, mode: LaunchMode.externalApplication);
 
+    // DB conn
+    context
+        .read<Web3Cubit>()
+        .returnBackToCustomer();
+  }
   @override
   void initState() {
     super.initState();
@@ -492,6 +499,7 @@ class _ReturnScreenState extends State<ReturnScreen> {
                                     //Text("Return Product"),
                                     ElevatedButton(
                                       onPressed: () {
+                                        returnToBuyer();
                                       },
                                       style: buttonStyle,
                                       child: const Text("Return Product"),

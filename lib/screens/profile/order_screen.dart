@@ -11,7 +11,6 @@ class Order {
   final int productId;
   final int sellerId;
   final int customerId;
-  final int row;
 
   Order({
     required this.transactionDate,
@@ -19,7 +18,6 @@ class Order {
     required this.productId,
     required this.sellerId,
     required this.customerId,
-    required this.row,
   });
 
   factory Order.fromJson(Map<String, dynamic> json) {
@@ -29,7 +27,6 @@ class Order {
       productId: json['productid'],
       sellerId: json['sellerid'],
       customerId: json['customerid'],
-      row: json['row'],
     );
   }
 }

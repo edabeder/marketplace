@@ -176,6 +176,15 @@ class _HomeScreenState extends State<HomeScreen> {
         .payShopping(EthereumAddress.fromHex("0x3F3f8C25cff70508A7F48Da0EB7EECa38330C5ad"), "hello", 
         BigInt.from(20))
         .then((value) => cartList = []);
+            List<Map<String, Map<String, dynamic>>> result = await connection
+    .mappedResultsQuery('INSERT INTO public.history (transactiondate, amount, productid, sellerid, customerid) values (@date, @amount, @pid, @sid, @cid)',
+         substitutionValues: {
+       'date': '2023-05-08',
+       'amount': 1,
+       'pid': 1,
+       'sid': 1,
+       'cid': int.parse(GlobalData.globalUserId),
+       });
   }
 
   void requestReturn(int row) {
@@ -553,7 +562,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   );
                                                 }
                                               } else {
-                                                //sendTokensToSeller();
+                                                sendTokensToSeller(5);
                                               }
                                             },
                                             style: buttonStyle,
