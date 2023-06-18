@@ -5,11 +5,15 @@ import 'dart:typed_data';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:untitled1/screens/home/components/discount_banner.dart';
 
 import '../../constants.dart';
 import '../../helper/keyboard.dart';
 import '../../main.dart';
 import '../../size_config.dart';
+import '../profile/components/profile_menu.dart';
+import '../sign_in/sign_in_screen.dart';
+import 'new_discount_banner.dart';
 
 class SellerScreen extends StatefulWidget {
   @override
@@ -44,31 +48,35 @@ class _SellerScreenState extends State<SellerScreen> {
     }
     return null;
   }
+  Future<void> logout(BuildContext context) async {
+    final response =
+    await http.post(Uri.parse('http://10.0.2.2:3000/api/logout'));
+    if (response.statusCode == 200) {
+      // İstek başarılı, logout işlemi tamamlandı
+      // İstediğiniz ek işlemleri burada yapabilirsiniz
 
-  /*void addProduct(String brand, String name, int sellerID, int price,
-      ByteData picture, String category) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://10.0.2.2:3000/api/products'),
-        body: {
-          'brand': brand,
-          'pName': name,
-          'sellerID': sellerID,
-          'price': price,
-          'pPicture': picture,
-          'category': category,
-        },
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => const SignInScreen()),
       );
-      if (response.statusCode == 201) {
-        final responseData = jsonDecode(response.body);
-        print('New product added: $responseData');
-      } else {
-        print('Error adding product: ${response.reasonPhrase}');
-      }
-    } catch (e) {
-      print('Error adding product: $e');
+    } else {
+      // İstek başarısız, hata mesajını göster veya uygun işlemi yap
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Error'),
+          content: Text('Logout failed. Please try again.'),
+          actions: [
+            TextButton(
+              child: Text('OK'),
+              onPressed: () => Navigator.pop(context),
+            ),
+          ],
+        ),
+      );
     }
-  }*/
+  }
 
   Future<void> addProduct() async {
     setState(() {
@@ -107,32 +115,6 @@ class _SellerScreenState extends State<SellerScreen> {
     }
   }
 
-  /*Future<ByteData?> _pickImage(ImageSource source) async {
-    final completer = Completer<ByteData?>();
-    try {
-      final pickedFile = await ImagePicker().getImage(source: source);
-      print(pickedFile?.readAsBytes());
-      print("Hello");
-      if (pickedFile != null) {
-        setState(() {
-          _imageFile = File(pickedFile.path);
-        });
-      }
-      if (pickedFile != null) {
-        final imageFile = File(pickedFile.path);
-        final bytes = await imageFile.readAsBytes();
-        print(bytes);
-        print("hi");
-        completer.complete(ByteData.view(bytes.buffer));
-      } else {
-        completer.complete(null);
-      }
-    } catch (e) {
-      print(e);
-      completer.completeError(e);
-    }
-    return completer.future;
-  }*/
 
   Future<void> _pickImage(ImageSource source) async {
     try {
@@ -175,39 +157,122 @@ class _SellerScreenState extends State<SellerScreen> {
           title: Text('Seller Screen'),
           backgroundColor: Color(0xFFfe6796),
           actions: <Widget>[
-            IconButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (BuildContext context) => MyHomePage(),
-                ),
-              ),
-              icon: const Icon(Icons.home),
-            ),
           ]),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              SizedBox(height: 20),
-              _imageFile != null
-                  ? Image.file(
-                      _imageFile!,
-                      height: 100,
-                    )
-                  : Container(
-                      height: 100,
-                      color: Colors.grey[300],
-                    ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        child: SingleChildScrollView(
+          child: Container(
+            height: MediaQuery.of(context).size.height,
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  SizedBox(height: 20),
+                  _imageFile != null
+                      ? Image.file(
+                          _imageFile!,
+                          height: 100,
+                        )
+                      : Container(
+                          height: 50,
+                          color: Colors.grey[300],
+                        ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () {
+                          pickedImage = _pickImage(ImageSource.gallery);
+                        },
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          primary: Colors.white,
+                          backgroundColor: kPrimaryColor,
+                        ),
+                        child: Text('Gallery'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () {
+                          pickedImage = _pickImage(ImageSource.camera);
+                        },
+                        style: TextButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          primary: Colors.white,
+                          backgroundColor: kPrimaryColor,
+                        ),
+                        child: Text('Camera'),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 20),
+                  NewDiscountBanner(),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      controller: _brandController,
+                      decoration: InputDecoration(
+                        hintText: 'Product Brand',
+                      ),
+                      validator: (value) =>
+                          _validateFormField(value, 'Product Brand'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _nameController,
+                      decoration: InputDecoration(
+                        hintText: 'Product Name',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _sellerIDController,
+                      decoration: InputDecoration(
+                        hintText: 'Seller ID',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _priceController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'Product Price',
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: _categoryController,
+                      decoration: InputDecoration(
+                        hintText: 'Product Category',
+                      ),
+                    ),
+                  ),
                   ElevatedButton(
+                    child: _isLoading
+                        ? CircularProgressIndicator()
+                        : Text(
+                            'Add Product',
+                            style: TextStyle(
+                              fontSize: getProportionateScreenWidth(18),
+                              color: Colors.white,
+                            ),
+                          ),
                     onPressed: () {
-                      pickedImage = _pickImage(ImageSource.gallery);
+                      if (_formKey.currentState!.validate()) {
+                        _formKey.currentState!.save();
+                        addProduct();
+                        KeyboardUtil.hideKeyboard(context);
+                      }
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -215,122 +280,44 @@ class _SellerScreenState extends State<SellerScreen> {
                       primary: Colors.white,
                       backgroundColor: kPrimaryColor,
                     ),
-                    child: Text('Gallery'),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      pickedImage = _pickImage(ImageSource.camera);
-                    },
-                    style: TextButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20)),
-                      primary: Colors.white,
-                      backgroundColor: kPrimaryColor,
+                  ProfileMenu(
+                    text: 'Log Out',
+                    icon: 'assets/icons/Log out.svg',
+                    press: () => logout(context),
+                  ),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: _products.length,
+                      itemBuilder: (context, index) {
+                        final product = _products[index];
+                        return ListTile(
+                          leading: product['image'] != null
+                              ? Image.file(
+                                  File(product['image']),
+                                  height: 50,
+                                )
+                              : Container(
+                                  height: 50,
+                                  width: 50,
+                                  color: Colors.grey[300],
+                                ),
+                          title: Text('${product['brand']} ${product['name']}'),
+                          subtitle: Text('\$${product['price']}'),
+                          trailing: IconButton(
+                            icon: Icon(Icons.delete),
+                            onPressed: () => _deleteProduct(index),
+                          ),
+
+                        );
+                      },
                     ),
-                    child: Text('Camera'),
                   ),
+
+
                 ],
               ),
-              SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextFormField(
-                  controller: _brandController,
-                  decoration: InputDecoration(
-                    hintText: 'Product Brand',
-                  ),
-                  validator: (value) =>
-                      _validateFormField(value, 'Product Brand'),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _nameController,
-                  decoration: InputDecoration(
-                    hintText: 'Product Name',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _sellerIDController,
-                  decoration: InputDecoration(
-                    hintText: 'Seller ID',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _priceController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    hintText: 'Product Price',
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _categoryController,
-                  decoration: InputDecoration(
-                    hintText: 'Product Category',
-                  ),
-                ),
-              ),
-              ElevatedButton(
-                child: _isLoading
-                    ? CircularProgressIndicator()
-                    : Text(
-                        'Add Product',
-                        style: TextStyle(
-                          fontSize: getProportionateScreenWidth(18),
-                          color: Colors.white,
-                        ),
-                      ),
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _formKey.currentState!.save();
-                    addProduct();
-                    KeyboardUtil.hideKeyboard(context);
-                  }
-                },
-                style: TextButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  primary: Colors.white,
-                  backgroundColor: kPrimaryColor,
-                ),
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemCount: _products.length,
-                  itemBuilder: (context, index) {
-                    final product = _products[index];
-                    return ListTile(
-                      leading: product['image'] != null
-                          ? Image.file(
-                              File(product['image']),
-                              height: 50,
-                            )
-                          : Container(
-                              height: 50,
-                              width: 50,
-                              color: Colors.grey[300],
-                            ),
-                      title: Text('${product['brand']} ${product['name']}'),
-                      subtitle: Text('\$${product['price']}'),
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => _deleteProduct(index),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
         ),
       ),

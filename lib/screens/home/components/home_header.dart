@@ -8,6 +8,7 @@ import 'package:untitled1/screens/sign_up/register_page.dart';
 import 'package:untitled1/screens/sign_up/sign_up_screen.dart';
 import '../../../NewCartScreens/NewCartProvider.dart';
 import '../../../NewCartScreens/new_cart_screen.dart';
+import '../custom_home_screen.dart';
 import '/screens/cart/cart_screen.dart';
 
 import '../../../size_config.dart';
@@ -20,6 +21,12 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void refreshPage(BuildContext context) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (BuildContext context) => CustomHomeScreen()),
+      );
+    }
     final CartProvider cart  = Provider.of<CartProvider>(context);
     return Padding(
       padding:
@@ -54,7 +61,7 @@ class HomeHeader extends StatelessWidget {
           //   ),
           //   icon: const Icon(Icons.home),
           // ),
-          SizedBox(width: 30,),
+          SizedBox(width: 20,),
 
           InkWell(
             onTap: (){
@@ -62,6 +69,7 @@ class HomeHeader extends StatelessWidget {
             },
             child: const Icon(Icons.shopping_bag_outlined),
           ),
+
         ],
       ),
     );

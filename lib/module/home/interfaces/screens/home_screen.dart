@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:untitled1/NewCartScreens/NewCartModel.dart';
 import 'package:untitled1/NewCartScreens/NewDBHelper.dart';
 import 'package:untitled1/screens/home/custom_home_screen.dart';
+import 'package:untitled1/screens/seller/seller_screen.dart';
 import 'package:untitled1/screens/sign_in/components/sign_form.dart';
 import '../../../../screens/profile/order_screen.dart';
 import '/module/auth/interfaces/screens/authentication_screen.dart';
@@ -173,13 +174,13 @@ class _HomeScreenState extends State<HomeScreen> {
     await product.buyProducts(); 
     await context
         .read<Web3Cubit>()
-        .payShopping(EthereumAddress.fromHex("0x3F3f8C25cff70508A7F48Da0EB7EECa38330C5ad"), "hello", 
+        .payShopping(EthereumAddress.fromHex("0x491b44818F57B7A5a2c15241747DeB33cF6d4BA3"), "nike",
         BigInt.from(20))
         .then((value) => cartList = []);
             List<Map<String, Map<String, dynamic>>> result = await connection
     .mappedResultsQuery('INSERT INTO public.history (transactiondate, amount, productid, sellerid, customerid) values (@date, @amount, @pid, @sid, @cid)',
          substitutionValues: {
-       'date': '2023-05-08',
+       'date': '2023-06-19',
        'amount': 1,
        'pid': 1,
        'sid': 1,
@@ -465,12 +466,31 @@ class _HomeScreenState extends State<HomeScreen> {
                                     SizedBox(height: 10.0),
                                     ElevatedButton(
                                       onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  CustomHomeScreen()),
-                                        );
+                                        if (!isSeller){
+                                          Navigator.push(
+                                             context,
+                                             MaterialPageRoute(
+                                                 builder: (context) =>
+                                                     CustomHomeScreen()),
+                                           );
+
+                                        }
+                                        else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SellerScreen()),
+                                          );
+
+                                        }
+
+                                        // Navigator.push(
+                                        //   context,
+                                        //   MaterialPageRoute(
+                                        //       builder: (context) =>
+                                        //           CustomHomeScreen()),
+                                        // );
                                       },
                                       style: buttonStyle,
                                       child: const Text("Back To App"),

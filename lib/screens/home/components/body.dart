@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:untitled1/HomePage.dart';
 import 'package:untitled1/screens/home/components/trialProduct.dart';
+import 'package:untitled1/screens/home/custom_home_screen.dart';
 import 'package:untitled1/screens/home/homeComponent.dart';
 
 import '../../../size_config.dart';
