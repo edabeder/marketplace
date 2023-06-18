@@ -117,6 +117,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Orders'),
+        backgroundColor: Color(0xFFfe6796),
       ),
       body: ListView.builder(
         itemCount: orders.length,
@@ -133,8 +134,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   MaterialPageRoute(builder: (context) =>  NewAuthenticationScreen()),
                 );
 
-
               },
+              style: ElevatedButton.styleFrom(
+                primary: Color(0xFFfe6796), // Change the background color here
+              ),
               child: Text('Return'),
             ),
           );
