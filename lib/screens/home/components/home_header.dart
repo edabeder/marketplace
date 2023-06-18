@@ -21,12 +21,6 @@ class HomeHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void refreshPage(BuildContext context) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (BuildContext context) => CustomHomeScreen()),
-      );
-    }
     final CartProvider cart  = Provider.of<CartProvider>(context);
     return Padding(
       padding:

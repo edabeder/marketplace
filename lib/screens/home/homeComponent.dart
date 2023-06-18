@@ -45,15 +45,15 @@ class _HomeProductsState extends State<HomeProducts> {
     product = Product.empty();
     product.setConnection();
 
-  Future.delayed(Duration(seconds: 1), () {
-  for(Product p in product.productList)
-   {
-    productName.add(p.productName);
-    productPrice.add(p.price);
+    Future.delayed(Duration(seconds: 1), () {
+      for(Product p in product.productList)
+      {
+        productName.add(p.productName);
+        productPrice.add(p.price);
 
-    //productImage.add(p.img);
-   }
-  });  
+        //productImage.add(p.img);
+      }
+    });
 
   }
 
@@ -102,7 +102,7 @@ class _HomeProductsState extends State<HomeProducts> {
                                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
                                     const SizedBox(height: 5,),
-                                    Text(' '+r'$'+ productPrice[index].toString() ,
+                                    Text( productPrice[index].toString()+' '+r'Wei' ,
                                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                                     ),
                                     const SizedBox(height: 5,),
@@ -146,8 +146,8 @@ class _HomeProductsState extends State<HomeProducts> {
                                           height: 35,
                                           width: 100,
                                           decoration: BoxDecoration(
-                                              color: kPrimaryColor,
-                                              borderRadius: BorderRadius.circular(20),
+                                            color: kPrimaryColor,
+                                            borderRadius: BorderRadius.circular(20),
 
                                           ),
 
@@ -178,4 +178,3 @@ class _HomeProductsState extends State<HomeProducts> {
     );
   }
 }
-

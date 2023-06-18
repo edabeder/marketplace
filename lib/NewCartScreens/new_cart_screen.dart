@@ -155,7 +155,7 @@ class _NewCartScreenState extends State<NewCartScreen> {
                                                       snapshot
                                                           .data![index].price
                                                           .toString() +
-                                                      ' wei',
+                                                      ' Wei',
                                                   style: const TextStyle(
                                                       fontSize: 16,
                                                       fontWeight:
